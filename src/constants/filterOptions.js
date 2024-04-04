@@ -1,32 +1,68 @@
+class sortOption {
+  constructor(name, column) {
+    this.name = name
+    this.column = column
+  }
+}
 class inventoryfilter {
-  constructor(name, type) {
+  constructor(name, type, column, subFilters) {
     this.filterName = name
     this.FilterType = type
+    this.filterColumn = column
+    this.subFilters = subFilters
+    if (!subFilters) {
+      this.subFilters = []
+    }
   }
 }
 const availabilityFilter = 'availability'
 const categoryFilter = 'category'
 const typeFilter = 'type'
 
-const inventoryFilters = [
-  new inventoryfilter('In stock now', availabilityFilter),
-  new inventoryfilter('Circuits', categoryFilter),
-  new inventoryfilter('High School', categoryFilter),
-  new inventoryfilter('Math', categoryFilter),
-  new inventoryfilter('Microcontrollers', categoryFilter),
-  new inventoryfilter('Middle School', categoryFilter),
-  new inventoryfilter('Primary', categoryFilter),
-  new inventoryfilter('Robotics', categoryFilter),
-  new inventoryfilter('Science', categoryFilter),
-  new inventoryfilter('Teacher Resources', categoryFilter),
-  new inventoryfilter('Tools', categoryFilter),
-  new inventoryfilter('Upper Elementary', categoryFilter),
-  new inventoryfilter('Education', typeFilter),
-  new inventoryfilter('Electronics', typeFilter),
-  new inventoryfilter('More', typeFilter),
-  new inventoryfilter('Music', typeFilter),
-  new inventoryfilter('Science & Engineering', typeFilter),
-  new inventoryfilter('Toys & Games', typeFilter)
+const sortOptions = [
+  new sortOption('Relevance', 'C asc, B desc'),
+  new sortOption('Date Added', 'B desc'),
+  new sortOption('Name A-Z', 'C asc'),
+  new sortOption('Name Z-A', 'C desc')
 ]
 
-export { inventoryFilters as filterOptions, availabilityFilter, categoryFilter, typeFilter }
+const inventoryFilters = [
+  new inventoryfilter('In stock now', availabilityFilter, 'F'),
+  new inventoryfilter('Circuits', categoryFilter, 'J'),
+  new inventoryfilter('High School', categoryFilter, 'J'),
+  new inventoryfilter('Math', categoryFilter, 'J'),
+  new inventoryfilter('Microcontrollers', categoryFilter, 'J'),
+  new inventoryfilter('Middle School', categoryFilter, 'J'),
+  new inventoryfilter('Primary', categoryFilter, 'J'),
+  new inventoryfilter('Robotics', categoryFilter, 'J'),
+  new inventoryfilter('Science', categoryFilter, 'J'),
+  new inventoryfilter('Teacher Resources', categoryFilter, 'J'),
+  new inventoryfilter('Tools', categoryFilter, 'J'),
+  new inventoryfilter('Upper Elementary', categoryFilter, 'J'),
+  new inventoryfilter('Education', typeFilter, 'H', [
+    new inventoryfilter('Curriculum', typeFilter, 'I'),
+    new inventoryfilter('Education Kits', typeFilter, 'I'),
+    new inventoryfilter('Education Supplies', typeFilter, 'I'),
+    new inventoryfilter('Education Equipment', typeFilter, 'I')
+  ]),
+  new inventoryfilter('Electronics', typeFilter, 'H', [
+    new inventoryfilter('Microcontrollers', typeFilter, 'I'),
+    new inventoryfilter('Other Electronic Devices', typeFilter, 'I'),
+    new inventoryfilter('Robots', typeFilter, 'I')
+  ]),
+  new inventoryfilter('More', typeFilter, 'H'),
+  new inventoryfilter('Music', typeFilter, 'H'),
+  new inventoryfilter('Science & Engineering', typeFilter, 'H', [
+    (new inventoryfilter('General Measurement', typeFilter, 'I'),
+    new inventoryfilter('Lab Instruments & Equipment', typeFilter, 'I'))
+  ]),
+  new inventoryfilter('Toys & Games', typeFilter, 'H')
+]
+
+export {
+  inventoryFilters as filterOptions,
+  availabilityFilter,
+  categoryFilter,
+  typeFilter,
+  sortOptions
+}
