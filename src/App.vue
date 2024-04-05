@@ -1,7 +1,6 @@
 <script setup>
 import titleBar from './components/layout/title-bar.vue'
-import toolbar from './components/toolbar.vue'
-import router from '@/router'
+import toolbar from './components/toolbar-component.vue'
 </script>
 
 <template>

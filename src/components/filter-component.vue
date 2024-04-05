@@ -11,12 +11,14 @@ import filterCheckbox from '../components/filter-checkbox.vue'
 const emit = defineEmits(['filterUpdated'])
 const filterText = ref(null)
 const currentFilter = ref([])
-
 const filterParameterObject = ref(new filterParameters())
-
 const staticAvailabilityFilters = JSON.parse(
   JSON.stringify(filterOptions.filter((item) => item.FilterType == availabilityFilter))
 )
+
+defineExpose({
+  updateFilterText
+})
 
 function filterTextUpdated() {
   filterParameterObject.value.filterText = filterText.value
@@ -56,6 +58,10 @@ function addToFilterParam() {
         break
     }
   })
+}
+
+function updateFilterText(filterVal) {
+  filterText.value = filterVal
 }
 
 function filterItemUpdated(filterOption, checkedState, parentOption) {

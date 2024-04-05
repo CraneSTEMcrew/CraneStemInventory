@@ -4,18 +4,18 @@ import { sortOptions } from '@/constants/filterOptions'
 const emit = defineEmits(['optionsUpdated'])
 const props = defineProps(['pageSize', 'pageLayout', 'sortBy'])
 
-const pageSize = ref(null)
-const pageLayout = ref(null)
-const sortBy = ref(null)
+const pageSizeConst = ref(null)
+const pageLayoutConst = ref(null)
+const sortByConst = ref(null)
 
 onMounted(() => {
-  pageSize.value = props.pageSize ? props.pageSize : 15
-  pageLayout.value = props.pageLayout ? props.pageLayout : 'Grid'
-  sortBy.value = props.sortBy ? props.sortBy : sortOptions[0]
+  pageSizeConst.value = props.pageSize ? props.pageSize : 15
+  pageLayoutConst.value = props.pageLayout ? props.pageLayout : 'Grid'
+  sortByConst.value = props.sortBy ? props.sortBy : sortOptions[0]
 })
 
 function optionsUpdated() {
-  emit('optionsUpdated', pageSize.value, pageLayout.value, sortBy.value)
+  emit('optionsUpdated', pageSizeConst.value, pageLayoutConst.value, sortByConst.value)
 }
 </script>
 <template>
@@ -32,7 +32,7 @@ function optionsUpdated() {
                   class="form-select form-select-sm mb-3"
                   @change="optionsUpdated"
                   aria-label="Page Size"
-                  v-model="pageSize"
+                  v-model="pageSizeConst"
                 >
                   <option value="15">15</option>
                   <option value="30">30</option>
@@ -49,7 +49,7 @@ function optionsUpdated() {
                 <select
                   class="form-select form-select-sm mb-3"
                   @change="optionsUpdated"
-                  v-model="pageLayout"
+                  v-model="pageLayoutConst"
                   aria-label="results view format"
                 >
                   <option value="grid">Grid</option>
@@ -66,7 +66,7 @@ function optionsUpdated() {
                   class="form-select form-select-sm mb-3"
                   @change="optionsUpdated"
                   aria-label="results sorted by"
-                  v-model="sortBy"
+                  v-model="sortByConst"
                 >
                   <option
                     :selected="sortBy == option"

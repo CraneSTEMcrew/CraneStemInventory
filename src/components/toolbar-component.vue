@@ -1,8 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
-
 import router from '@/router'
-const emit = defineEmits(['topFilterUpdated'])
 const filterText = ref('')
 const isSearchFocused = reactive({
   value: false
@@ -20,8 +18,7 @@ function clearFilter() {
   isFilterLocked.value = false
 
   router.push({
-    name: 'inventory',
-    params: { filter: '$all$' }
+    name: 'inventory'
   })
 }
 function filterTextUpdated() {
@@ -30,6 +27,10 @@ function filterTextUpdated() {
     name: 'inventory',
     params: { filter: filterText.value }
   })
+  filterText.value = ''
+  isSearchFocused.value = false
+  isFilterLocked.value = false
+  filterInput.value.blur()
 }
 </script>
 <template>
@@ -45,7 +46,7 @@ function filterTextUpdated() {
       <div
         :class="{ active: router.currentRoute.value.name == 'inventory' }"
         class="col-1 menu-item text-center menu-item"
-        @click="() => router.push('/inventory/$all$')"
+        @click="() => router.push('/inventory')"
       >
         <i class="bi bi-grid"></i> Inventory
       </div>

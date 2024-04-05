@@ -1,12 +1,9 @@
 <script setup>
-import { ref } from 'vue'
 const emit = defineEmits(['pageUpdated'])
 const props = defineProps(['currentPage', 'pageTotal'])
 
 function pageChanged(newPage) {
-  console.log(newPage == props.currentPage)
   if (newPage <= 0 || newPage == props.currentPage || newPage > props.pageTotal) return
-
   emit('pageUpdated', newPage)
 }
 </script>
