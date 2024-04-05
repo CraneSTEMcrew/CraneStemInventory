@@ -18,10 +18,12 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     },
+
     {
-      path: '/inventory',
+      path: '/inventory/:filter',
       name: 'inventory',
-      component: InventoryView
+      component: InventoryView,
+      props: true
     }
   ]
 })

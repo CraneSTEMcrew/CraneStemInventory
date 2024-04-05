@@ -1,17 +1,36 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 import router from '@/router'
-
+const emit = defineEmits(['topFilterUpdated'])
+const filterText = ref('')
 const isSearchFocused = reactive({
   value: false
 })
+const isFilterLocked = ref(false)
+const filterInput = ref(null)
 
 function setFocusState(isFocus) {
   isSearchFocused.value = isFocus
 }
 
-//computed
+function clearFilter() {
+  filterInput.value.focus()
+  filterText.value = ''
+  isFilterLocked.value = false
+
+  router.push({
+    name: 'inventory',
+    params: { filter: '$all$' }
+  })
+}
+function filterTextUpdated() {
+  if (!filterText.value || filterText.value.length == 0) return
+  router.push({
+    name: 'inventory',
+    params: { filter: filterText.value }
+  })
+}
 </script>
 <template>
   <div id="tool-bar" class="p-0">
@@ -26,32 +45,38 @@ function setFocusState(isFocus) {
       <div
         :class="{ active: router.currentRoute.value.name == 'inventory' }"
         class="col-1 menu-item text-center menu-item"
-        @click="() => router.push('/inventory')"
+        @click="() => router.push('/inventory/$all$')"
       >
         <i class="bi bi-grid"></i> Inventory
       </div>
-      <div class="col"></div>
-      <div ref="searchBoxCtrl" class="col-2 d-flex align-items-center">
-        <div id="search-box" class="input-group">
-          <input
-            type="text"
-            @focus="setFocusState(true)"
-            @blur="setFocusState(false)"
-            ref="searchBox"
-            class="form-control"
-            :class="{
-              'search-box-input-large': isSearchFocused.value,
-              'search-box-input': !isSearchFocused.value
-            }"
-            placeholder="Search"
-            aria-label="Search"
-          />
-          <i
-            id="search-box-icon"
-            :class="{ 'search-box-large-icon': isSearchFocused.value }"
-            class="bi bi-search"
-          ></i>
-        </div>
+
+      <div ref="searchBoxCtrl" class="col text-end pt-2">
+        <input
+          type="text"
+          @focus="setFocusState(true)"
+          @blur="setFocusState(false)"
+          ref="filterInput"
+          class="search-box-input"
+          @keydown="isFilterLocked = true"
+          @keyup.enter="filterTextUpdated"
+          v-model="filterText"
+          :class="{
+            'search-box-input-large': isFilterLocked || isSearchFocused.value
+          }"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <i
+          id="search-box-icon"
+          v-if="filterText.length == 0 && !isFilterLocked"
+          class="bi bi-search"
+        ></i>
+        <i
+          id="search-box-icon"
+          @click="clearFilter"
+          v-if="filterText.length != 0"
+          class="bi bi-x"
+        ></i>
       </div>
       <div class="col-1"></div>
     </div>
@@ -106,23 +131,36 @@ function setFocusState(isFocus) {
 }
 
 .search-box-input {
-  width: 50%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: white;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  background-color: #434e5b;
+
+  border: var(--bs-border-width) solid #434e5b;
+  border-radius: var(--bs-border-radius);
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
   text-indent: 10px;
+  width: 10em;
 }
 .search-box-input-large {
-  width: 90%;
+  width: 30em;
   text-indent: 10px;
 }
 
 #search-box-icon {
   color: white;
+  margin-left: -2rem;
   top: 0.75rem;
   z-index: 100;
-  left: 40%;
-  position: absolute;
-}
-.search-box-large-icon {
-  left: 80% !important;
 }
 
 ::placeholder {

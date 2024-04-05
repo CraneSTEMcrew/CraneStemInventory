@@ -1,5 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import router from '@/router'
 import filterComponent from '../components/filter.vue'
 import inventorySearchResult from '../components/inventory-search-result.vue'
 import pager from '../components/pager.vue'
@@ -18,15 +20,44 @@ const isGrid = ref(true)
 const sortBy = ref(sortOptions[0])
 const currentPage = ref(1)
 const svc = new googleSheetsService(sheetID)
+const topFilter = ref(null)
+const route = useRoute()
+const currentRoute = ref(null)
 
 onMounted(async () => {
+  currentRoute.value = route.fullPath
+  topFilter.value = route.params.filter
   await fetchInventoryData()
 })
 
+watch(
+  route,
+  () => {
+    if (currentRoute.value && route.fullPath != currentRoute.value) {
+      currentRoute.value = route.fullPath
+      topFilter.value = route.params.filter
+      if (topFilter.value.replace('$all', '').length == 0) {
+        filterParameterObject.value.filterText = ''
+      }
+      fetchInventoryData()
+      console.log('refersh')
+    }
+  },
+  { deep: true, immediate: true }
+)
+
 function generateQuery() {
   let filterQuery = ''
+
+  if (topFilter.value && topFilter.value.replace('$all$', '').length > 0) {
+    filterQuery = `LOWER(C) LIKE '%${topFilter.value.toLowerCase()}%'`
+  }
+
   if (filterParameterObject.value.filterText.length > 0) {
-    filterQuery = `LOWER(C) LIKE '%${filterParameterObject.value.filterText.toLowerCase()}%'`
+    filterQuery =
+      filterQuery.length > 0
+        ? `${filterQuery} AND LOWER(C) LIKE '%${filterParameterObject.value.filterText.toLowerCase()}%'`
+        : `LOWER(C) LIKE '%${filterParameterObject.value.filterText.toLowerCase()}%'`
   }
   if (filterParameterObject.value.isAvailable) {
     filterQuery = filterQuery ? ` AND F > 0 ` : ' F > 0'
