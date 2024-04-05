@@ -20,7 +20,7 @@ const router = createRouter({
     },
 
     {
-      path: '/inventory/:filter',
+      path: '/inventory/:filter?',
       name: 'inventory',
       component: InventoryView,
       props: true

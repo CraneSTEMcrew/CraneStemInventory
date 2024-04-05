@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import router from '@/router'
-import filterComponent from '../components/filter.vue'
+import filterComponent from '../components/filter-component.vue'
 import inventorySearchResult from '../components/inventory-search-result.vue'
-import pager from '../components/pager.vue'
+import pager from '../components/pager-component.vue'
 import InventorySearchOptions from '../components/inventory-search-options.vue'
 import googleSheetsService from '../services/google-sheets-service'
 import { sortOptions } from '@/constants/filterOptions'
@@ -20,27 +19,29 @@ const isGrid = ref(true)
 const sortBy = ref(sortOptions[0])
 const currentPage = ref(1)
 const svc = new googleSheetsService(sheetID)
-const topFilter = ref(null)
 const route = useRoute()
+const filterComponentRef = ref(null)
 const currentRoute = ref(null)
 
 onMounted(async () => {
   currentRoute.value = route.fullPath
-  topFilter.value = route.params.filter
+  if (route.params && route.params.filter) {
+    filterParameterObject.value.filterText = route.params.filter
+    if (filterComponentRef.value) {
+      filterComponentRef.value.updateFilterText(route.params.filter)
+    }
+  }
   await fetchInventoryData()
 })
 
 watch(
   route,
   () => {
-    if (currentRoute.value && route.fullPath != currentRoute.value) {
+    if (currentRoute.value && route.fullPath !== currentRoute.value) {
       currentRoute.value = route.fullPath
-      topFilter.value = route.params.filter
-      if (topFilter.value.replace('$all', '').length == 0) {
-        filterParameterObject.value.filterText = ''
-      }
+      filterParameterObject.value.filterText = route.params.filter
+      filterComponentRef.value.updateFilterText(route.params.filter)
       fetchInventoryData()
-      console.log('refersh')
     }
   },
   { deep: true, immediate: true }
@@ -49,15 +50,8 @@ watch(
 function generateQuery() {
   let filterQuery = ''
 
-  if (topFilter.value && topFilter.value.replace('$all$', '').length > 0) {
-    filterQuery = `LOWER(C) LIKE '%${topFilter.value.toLowerCase()}%'`
-  }
-
   if (filterParameterObject.value.filterText.length > 0) {
-    filterQuery =
-      filterQuery.length > 0
-        ? `${filterQuery} AND LOWER(C) LIKE '%${filterParameterObject.value.filterText.toLowerCase()}%'`
-        : `LOWER(C) LIKE '%${filterParameterObject.value.filterText.toLowerCase()}%'`
+    filterQuery = `LOWER(C) LIKE '%${filterParameterObject.value.filterText.toLowerCase()}%'`
   }
   if (filterParameterObject.value.isAvailable) {
     filterQuery = filterQuery ? ` AND F > 0 ` : ' F > 0'
@@ -125,7 +119,6 @@ function generateQuery() {
   if (filterQuery.length > 0) {
     filterQuery = ` WHERE ${filterQuery}`
   }
-  console.log(filterQuery)
   return filterQuery.length > 0 ? filterQuery : undefined
 }
 
@@ -202,7 +195,7 @@ function filterUpdate(param) {
     <div class="row">
       <div class="col-3">
         <div class="container-fluid p-0">
-          <filterComponent @filterUpdated="filterUpdate"></filterComponent>
+          <filterComponent ref="filterComponentRef" @filterUpdated="filterUpdate"></filterComponent>
         </div>
       </div>
       <div class="col">
