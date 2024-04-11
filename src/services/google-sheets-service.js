@@ -41,6 +41,24 @@ export default class googleSheetsService {
         })
     })
   }
+  //gets the first result of the search, used for details by ID column
+  getFirstRecord(sheetName,colVal,val){
+    let url = `${this.baseURL}&sheet=${encodeURIComponent(sheetName)}&tq=WHERE ${colVal}=${val} LIMIT 1`
+    return new Promise((resolve, reject) => {
+      axios
+        .get(url)
+        .then((result) => {
+          let detailResult =this.parseResponse(result.data)
+          if (detailResult && detailResult.length === 0){
+            reject(`Could not find a record for '${val}'`)
+          }
+          resolve(detailResult[0])
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  }
   parseEvaluatedResponse(res) {
     const jsData = JSON.parse(res.substring(47).slice(0, -2))
     const rows = jsData.table.rows

@@ -30,4 +30,6 @@ import toolbar from './components/toolbar-component.vue'
   margin-left: 5%;
   margin-right: 5%;
 }
+
+
 </style>

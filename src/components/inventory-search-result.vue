@@ -1,9 +1,14 @@
 <script setup>
 const props = defineProps(['data', 'isGrid'])
+const emit = defineEmits(['itemSelected'])
+
+function inventoryItemClicked(){
+  emit('itemSelected', props.data)
+}
 </script>
 <template>
-  <div class="col-4" v-if="props.isGrid">
-    <div class="card">
+  <div class="col-4 inventory-result" v-if="props.isGrid">
+    <div class="card" title="View Details"  @click="inventoryItemClicked">
       <div class="text-center pt-2">
         <img
           v-if="props.data.image"
@@ -17,11 +22,12 @@ const props = defineProps(['data', 'isGrid'])
           class="card-img-top result-image"
           :alt="props.data.name"
         />
+
       </div>
       <div class="card-body">
-        <div class="container-fluid card-text ps-0 pt-2">
+        <div class="container-fluid card-text ps-2 pt-2">
           <div class="row">
-            <div class="col ps-0">
+            <div class="col ps-0 inventory-title">
               {{ props.data.name }}
             </div>
           </div>
@@ -38,9 +44,10 @@ const props = defineProps(['data', 'isGrid'])
         </div>
       </div>
     </div>
+
   </div>
-  <div class="col-12" v-if="!props.isGrid">
-    <div class="card">
+  <div class="col-12 inventory-result" v-if="!props.isGrid">
+    <div class="card"  title="View Details" >
       <div class="container-fluid">
         <div class="row">
           <div class="col-2">
@@ -57,7 +64,7 @@ const props = defineProps(['data', 'isGrid'])
               :alt="props.data.name"
             />
           </div>
-          <div class="col text-start pt-2">
+          <div class="col text-start pt-2 inventory-title">
             {{ props.data.name }}
           </div>
           <div class="col text-end pt-2">
@@ -79,4 +86,14 @@ const props = defineProps(['data', 'isGrid'])
   max-width: 10rem;
   min-width: 10rem;
 }
+.inventory-result{
+  cursor:pointer;
+}
+
+.card:hover{
+  .inventory-title{
+    font-weight: 500;
+  }
+}
+
 </style>

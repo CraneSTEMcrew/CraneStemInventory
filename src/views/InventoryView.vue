@@ -8,7 +8,8 @@ import InventorySearchOptions from '../components/inventory-search-options.vue'
 import googleSheetsService from '../services/google-sheets-service'
 import { sortOptions } from '@/constants/filterOptions'
 import { filterParameters } from '../classes/filter-parameter'
-const sheetID = '1V3SJog_ZNjtaEg2k2BJ_6if7cDcCuneS1tWH7cf1e-0'
+import router from '@/router/index.js'
+const sheetID = '1V3SJog_ZNjtaEg2k2BJ_6if7cDcCuneS1tWH7cf1e-0'  //move to constants
 const dataResult = ref([])
 const totalResults = ref(0)
 const filterParameterObject = ref(new filterParameters())
@@ -174,6 +175,12 @@ function filterUpdate(param) {
   filterParameterObject.value = param
   fetchInventoryData()
 }
+function inventoryItemSelected(item){
+  router.push({
+    name: 'inventory-detail',
+    params: { id: item.id }
+  })
+}
 </script>
 
 <template>
@@ -214,6 +221,7 @@ function filterUpdate(param) {
             v-for="item in dataResult"
             :key="item"
             :is-grid="pageLayout == 'grid'"
+            @item-selected="inventoryItemSelected"
             :data="item"
           ></inventorySearchResult>
         </div>
