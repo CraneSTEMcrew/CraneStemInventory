@@ -25,11 +25,13 @@ export default class googleSheetsService {
   //get Function
   GetSheetData(sheetName, query, pageSize, pageNumber, sortBy) {
     var offset = pageNumber == 1 ? 0 : pageSize * (pageNumber - 1)
-    let pagedQuery = `${query} ORDER BY ${sortBy.column} LIMIT ${pageSize} OFFSET ${offset}`
+    let pagedQuery = pageSize
+      ? `${query} ORDER BY ${sortBy.column} LIMIT ${pageSize} OFFSET ${offset}`
+      : query
     //
-
+    console.log(pagedQuery)
     let url = `${this.baseURL}&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent(pagedQuery)}`
-
+    console.log(url)
     return new Promise((resolve, reject) => {
       axios
         .get(url)
@@ -42,14 +44,14 @@ export default class googleSheetsService {
     })
   }
   //gets the first result of the search, used for details by ID column
-  getFirstRecord(sheetName,colVal,val){
+  getFirstRecord(sheetName, colVal, val) {
     let url = `${this.baseURL}&sheet=${encodeURIComponent(sheetName)}&tq=WHERE ${colVal}=${val} LIMIT 1`
     return new Promise((resolve, reject) => {
       axios
         .get(url)
         .then((result) => {
-          let detailResult =this.parseResponse(result.data)
-          if (detailResult && detailResult.length === 0){
+          let detailResult = this.parseResponse(result.data)
+          if (detailResult && detailResult.length === 0) {
             reject(`Could not find a record for '${val}'`)
           }
           resolve(detailResult[0])
@@ -66,6 +68,7 @@ export default class googleSheetsService {
     return rows[0].c[0].v
   }
   parseResponse(res) {
+    console.log(res)
     const jsData = JSON.parse(res.substring(47).slice(0, -2))
     let data = []
     const columns = jsData.table.cols
