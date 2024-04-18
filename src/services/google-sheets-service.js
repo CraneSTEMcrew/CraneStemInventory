@@ -28,10 +28,9 @@ export default class googleSheetsService {
     let pagedQuery = pageSize
       ? `${query} ORDER BY ${sortBy.column} LIMIT ${pageSize} OFFSET ${offset}`
       : query
-    //
-    console.log(pagedQuery)
+
     let url = `${this.baseURL}&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent(pagedQuery)}`
-    console.log(url)
+
     return new Promise((resolve, reject) => {
       axios
         .get(url)
@@ -68,7 +67,6 @@ export default class googleSheetsService {
     return rows[0].c[0].v
   }
   parseResponse(res) {
-    console.log(res)
     const jsData = JSON.parse(res.substring(47).slice(0, -2))
     let data = []
     const columns = jsData.table.cols

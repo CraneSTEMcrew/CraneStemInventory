@@ -14,7 +14,10 @@ const route = useRoute()
 const currentRoute = ref(null)
 const scheduledDates = ref([])
 
+let currentMonth = undefined
+
 onMounted(() => {
+  currentMonth = new Date().getMonth() + 1
   currentRoute.value = route.fullPath
   if (props.id) {
     loadInventoryDetails(props.id)
@@ -44,17 +47,36 @@ function getSchedule(dateVal) {
     m = date.getMonth()
   let firstDay = getFormattedDate(new Date(y, m, 1))
   let lastDay = getFormattedDate(new Date(y, m + 1, 0))
-  console.log(firstDay)
-  console.log(lastDay)
+
+  //clear the calendar
+  scheduledDates.value = []
 
   svc
     .GetSheetData(
       'reservations',
-      `WHERE D = ${inventoryItem.value.id} AND  B <= date '"&text("${firstDay}","yyyy-mm-dd")&"' AND C >= date '"&text("${lastDay}","yyyy-mm-dd")`
+      `SELECT * WHERE D = ${inventoryItem.value.id} AND  (B >=  date '${firstDay}' OR C <= date '${lastDay}')`
     )
     .then((result) => {
-      console.log(result)
+      result.forEach((val) => {
+        scheduledDates.value.push({
+          highlight: {
+            color: 'red',
+            fillMode: 'light'
+          },
+          dates: { start: new Date(val.start), end: new Date(val.end) },
+          popover: {
+            label: `Reserved: ${val.requested_qty} : ${new Date(val.start).toDateString()} - ${new Date(val.end).toDateString('mm-dd-yyyy')}`
+          }
+        })
+      })
     })
+}
+function updateSchedule(val) {
+  if (currentMonth != val[0].month) {
+    currentMonth = val[0].month
+
+    getSchedule(`${val[0].month}-01-${val[0].year}`)
+  }
 }
 function viewAdditionalInfo() {
   window.open(inventoryItem.value.infoURL)
@@ -109,13 +131,14 @@ function getFormattedDate(date) {
               <div class="col">
                 <p>{{ inventoryItem.description }}</p>
                 <button
-                  v-if="inventoryItem.infoURL.length > 0"
+                  v-if="inventoryItem.infoURL && inventoryItem.infoURL.length > 0"
                   v-on:click="viewAdditionalInfo"
                   type="button"
                   class="btn btn-info text-light"
                 >
                   View Additional File
                 </button>
+                <p class="pt-4">Current Number Available: {{ inventoryItem.available }}</p>
               </div>
             </div>
             <div class="row">
@@ -128,8 +151,14 @@ function getFormattedDate(date) {
                 >
                   {{ tag }}
                 </span>
+
                 <p class="pt-4">Availability</p>
-                <Calendar :attributes="scheduledDates" borderless expanded />
+                <Calendar
+                  :attributes="scheduledDates"
+                  @update:pages="updateSchedule"
+                  borderless
+                  expanded
+                />
               </div>
             </div>
           </div>
