@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import requestInventory from '../components/request-inventory.vue'
 import contactDetail from '../components/contact-detail.vue'
 import googleSheetsService from '@/services/google-sheets-service.js'
 import 'v-calendar/style.css'
@@ -13,6 +14,7 @@ const svc = new googleSheetsService(sheetID)
 const route = useRoute()
 const currentRoute = ref(null)
 const scheduledDates = ref([])
+const showModal = ref(false)
 
 let currentMonth = undefined
 
@@ -78,6 +80,9 @@ function updateSchedule(val) {
     getSchedule(`${val[0].month}-01-${val[0].year}`)
   }
 }
+function showRequestForm() {
+  showModal.value = true
+}
 function viewAdditionalInfo() {
   window.open(inventoryItem.value.infoURL)
 }
@@ -94,81 +99,98 @@ function getFormattedDate(date) {
 }
 </script>
 <template>
-  <div class="container-fluid" v-if="inventoryItem != null">
-    <div class="row">
-      <div class="col">
-        <span class="fs-4">{{ inventoryItem.name }}</span>
-        <span v-if="inventoryItem.available > 0" class="badge rounded-pill text-bg-primary ms-2"
-          >In Stock now</span
-        >
-        <span v-if="inventoryItem.available == 0" class="badge rounded-pill text-bg-danger ms-2"
-          >Unavailable</span
-        >
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <div class="row">
-          <div class="col">navigation detail</div>
-        </div>
-        <div class="row">
-          <div class="col-2">
-            <img
-              v-if="inventoryItem.image && inventoryItem.image.length > 0"
-              :src="`/inventory/${inventoryItem.image}`"
-              class="card-img-top result-image"
-              :alt="inventoryItem.name"
-            />
-            <img
-              v-if="!inventoryItem.image || inventoryItem.image.length == 0"
-              src="/inventory/no-image.jpg"
-              class="card-img-top result-image"
-              :alt="inventoryItem.name"
-            />
-          </div>
-          <div class="col text-start">
-            <div class="row">
-              <div class="col">
-                <p>{{ inventoryItem.description }}</p>
-                <button
-                  v-if="inventoryItem.infoURL && inventoryItem.infoURL.length > 0"
-                  v-on:click="viewAdditionalInfo"
-                  type="button"
-                  class="btn btn-info text-light"
-                >
-                  View Additional File
-                </button>
-                <p class="pt-4">Current Number Available: {{ inventoryItem.available }}</p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <p class="pt-4">More</p>
-                <span
-                  :key="tag"
-                  v-for="tag in inventoryItem.subtype.split(',')"
-                  class="badge rounded-pill text-bg-info me-2 text-light tag"
-                >
-                  {{ tag }}
-                </span>
-
-                <p class="pt-4">Availability</p>
-                <Calendar
-                  :attributes="scheduledDates"
-                  @update:pages="updateSchedule"
-                  borderless
-                  expanded
-                />
-              </div>
-            </div>
-          </div>
+  <div class="container-fluid">
+    <div class="container-fluid" v-if="inventoryItem != null">
+      <div class="row">
+        <div class="col">
+          <span class="fs-4">{{ inventoryItem.name }}</span>
+          <span v-if="inventoryItem.available > 0" class="badge rounded-pill text-bg-primary ms-2"
+            >In Stock now</span
+          >
+          <span v-if="inventoryItem.available == 0" class="badge rounded-pill text-bg-danger ms-2"
+            >Unavailable</span
+          >
         </div>
       </div>
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div class="col">navigation detail</div>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <img
+                v-if="inventoryItem.image && inventoryItem.image.length > 0"
+                :src="`/inventory/${inventoryItem.image}`"
+                class="card-img-top result-image"
+                :alt="inventoryItem.name"
+              />
+              <img
+                v-if="!inventoryItem.image || inventoryItem.image.length == 0"
+                src="/inventory/no-image.jpg"
+                class="card-img-top result-image"
+                :alt="inventoryItem.name"
+              />
+            </div>
+            <div class="col text-start">
+              <div class="row">
+                <div class="col">
+                  <p>{{ inventoryItem.description }}</p>
+                  <button
+                    v-if="inventoryItem.infoURL && inventoryItem.infoURL.length > 0"
+                    v-on:click="viewAdditionalInfo"
+                    type="button"
+                    class="btn btn-info text-light"
+                  >
+                    View Additional File
+                  </button>
+                  <p class="pt-4">
+                    Current Number Available: <b>{{ inventoryItem.available }}</b>
+                  </p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <p class="pt-4">More</p>
+                  <span
+                    :key="tag"
+                    v-for="tag in inventoryItem.subtype.split(',')"
+                    class="badge rounded-pill text-bg-info me-2 text-light tag"
+                  >
+                    {{ tag }}
+                  </span>
 
-      <div class="col-3">
-        <contactDetail></contactDetail>
+                  <p class="pt-4">Availability</p>
+                  <Calendar
+                    :attributes="scheduledDates"
+                    @update:pages="updateSchedule"
+                    borderless
+                    expanded
+                  >
+                    <template #footer>
+                      <div class="container-fluid text-center">
+                        <button @click="showRequestForm" class="btn btn-warning">
+                          Request {{ inventoryItem.name }}
+                        </button>
+                      </div>
+                    </template>
+                  </Calendar>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-3">
+          <contactDetail></contactDetail>
+        </div>
       </div>
     </div>
+    <requestInventory
+      @dismiss="() => (showModal = false)"
+      :is-visible="showModal"
+      :inventory-item="inventoryItem"
+    ></requestInventory>
   </div>
 </template>
 <style scoped>
