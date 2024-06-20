@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
-//import { SMTPClient } from 'emailjs'
-const emit = defineEmits(['dismiss'])
+import { ref } from 'vue'
+import { inventoryRequest } from '../classes/inventory-request'
+
+const emit = defineEmits(['dismiss', 'requestCreated'])
 const props = defineProps(['isVisible', 'inventoryItem'])
 
 const requestForm = {
@@ -70,8 +71,9 @@ function dismiss() {
   emit('dismiss')
 }
 function submitForm() {
+  let errorCount = 0
   errors.value = {} // Clear previous errors
-  console.log(errors.value)
+
   validateField('firstName')
   validateField('lastName')
   validateField('email')
@@ -79,10 +81,20 @@ function submitForm() {
   validateField('startDate')
   validateField('endDate')
 
-  if (Object.keys(errors.value).length === 0) {
+  for (const [key, value] of Object.entries(errors.value)) {
+    if (errors[key]) errorCount += value.length > 0 ? 1 : 0
+  }
+  if (errorCount == 0) {
     //if no errors are found
-    // Validation passed, handle form submission
-    console.log('Form submitted successfully!', requestForm)
+    let request = new inventoryRequest(props.inventoryItem.id, props.inventoryItem.name)
+    request.startDate = requestForm.startDate.value
+    request.endDate = requestForm.endDate.value
+    request.contactEmail = requestForm.email.value
+    request.contactName = `${requestForm.firstName.value} ${requestForm.lastName.value}`
+    request.requestedQuantity = requestForm.quantity.value
+
+    emit('requestCreated', request)
+
     // Add logic to send data to the server if needed
   } else {
     console.log('Form has validation errors. Please correct them.')

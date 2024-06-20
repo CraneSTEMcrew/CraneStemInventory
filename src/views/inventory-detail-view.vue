@@ -3,19 +3,23 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import requestInventory from '../components/request-inventory.vue'
 import contactDetail from '../components/contact-detail.vue'
+import alert from '../components/common/alert-component.vue'
 import googleSheetsService from '@/services/google-sheets-service.js'
+import emailService from '@/services/email-service.js'
 import 'v-calendar/style.css'
 import { Calendar } from 'v-calendar'
+import { alertType } from '@/constants/alert-type'
 
 const sheetID = '1V3SJog_ZNjtaEg2k2BJ_6if7cDcCuneS1tWH7cf1e-0' //move to constants
 const props = defineProps(['id'])
 const inventoryItem = ref(null)
 const svc = new googleSheetsService(sheetID)
+const emailSvc = new emailService()
 const route = useRoute()
 const currentRoute = ref(null)
 const scheduledDates = ref([])
 const showModal = ref(false)
-
+const alertComponent = ref(null)
 let currentMonth = undefined
 
 onMounted(() => {
@@ -97,9 +101,50 @@ function getFormattedDate(date) {
 
   return year + '-' + month + '-' + day
 }
+function requestCreated(request) {
+  // let publicKey = import.meta.env.VITE_EMAILPUBLICKEY
+  // let template = import.meta.env.VITE_EMAILTEMPLATEID
+  // let serviceKey = import.meta.env.VITE_EMAILSERVICEKEY
+  // let emailMessage = `The following request has been created:<br>Requested by: <b>${request.contactName}</b>br>Email: <b>${request.contactEmail}</b>`
+  // emailMessage +=`<p><table>`
+  // let templateParams = {
+  //   message: emailMessage
+  // }
+  // requestDate: request.requestDate,
+  //   id: request.id,
+  //   itemDescription: request.itemDescription,
+  //   requestedQuantity: request.requestedQuantity,
+  //   startDate: request.startDate,
+  //   endDate: request.endDate,
+  //   contactName: request.contactName,
+  //   contactEmail: request.contactEmail,
+  //   from_email: 'somniloquent@gmail.com'
+
+  emailSvc.createInternalNotificationEmail(request)
+
+  emailSvc
+    .createConfirmationEmail(request)
+    .then(() => {
+      showModal.value = false
+      alertComponent.value.showAlert(
+        'Request Created',
+        `Your request for ${request.requestedQuantity} ${request.itemDescription} has been submitted.  A confirmation email has been sent to ${request.contactEmail}`,
+        alertType.SUCCESS
+      )
+    })
+    .catch(() => {
+      showModal.value = false
+      alertComponent.value.showAlert(
+        'Error',
+        'An Error Occurred.  Please contact stem@stem.com for further assistance',
+        alertType.ERROR
+      )
+    })
+}
 </script>
 <template>
   <div class="container-fluid">
+    <alert ref="alertComponent"></alert>
     <div class="container-fluid" v-if="inventoryItem != null">
       <div class="row">
         <div class="col">
@@ -190,6 +235,7 @@ function getFormattedDate(date) {
       @dismiss="() => (showModal = false)"
       :is-visible="showModal"
       :inventory-item="inventoryItem"
+      @requestCreated="requestCreated"
     ></requestInventory>
   </div>
 </template>

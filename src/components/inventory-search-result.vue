@@ -2,27 +2,26 @@
 const props = defineProps(['data', 'isGrid'])
 const emit = defineEmits(['itemSelected'])
 
-function inventoryItemClicked(){
+function inventoryItemClicked() {
   emit('itemSelected', props.data)
 }
 </script>
 <template>
   <div class="col-4 inventory-result" v-if="props.isGrid">
-    <div class="card" title="View Details"  @click="inventoryItemClicked">
+    <div class="card" title="View Details" @click="inventoryItemClicked">
       <div class="text-center pt-2">
         <img
           v-if="props.data.image"
-          :src="`/inventory/${props.data.image}`"
+          :src="`${imageURL + props.data.image}`"
           class="card-img-top result-image"
           :alt="props.data.name"
         />
         <img
           v-if="!props.data.image"
-          src="/inventory/no-image.jpg"
+          :src="`${imageURL}no-image.jpg}`"
           class="card-img-top result-image"
           :alt="props.data.name"
         />
-
       </div>
       <div class="card-body">
         <div class="container-fluid card-text ps-2 pt-2">
@@ -44,10 +43,9 @@ function inventoryItemClicked(){
         </div>
       </div>
     </div>
-
   </div>
   <div class="col-12 inventory-result" v-if="!props.isGrid">
-    <div class="card"  title="View Details" >
+    <div class="card" title="View Details">
       <div class="container-fluid">
         <div class="row">
           <div class="col-2">
@@ -86,14 +84,13 @@ function inventoryItemClicked(){
   max-width: 10rem;
   min-width: 10rem;
 }
-.inventory-result{
-  cursor:pointer;
+.inventory-result {
+  cursor: pointer;
 }
 
-.card:hover{
-  .inventory-title{
+.card:hover {
+  .inventory-title {
     font-weight: 500;
   }
 }
-
 </style>

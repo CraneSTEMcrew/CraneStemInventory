@@ -5,6 +5,28 @@ export default class googleSheetsService {
     this.baseURL = `https://docs.google.com/spreadsheets/d/${this.id}/gviz/tq?`
   }
 
+  createRequest(request) {
+    let requestSheetName = import.meta.env.VITE_REQUESTSHEET
+    let updateURL = `https://sheets.googleapis.com/v4/spreadsheets/${this.id}/values/${requestSheetName}:append`
+    let requestBody = {
+      range: requestSheetName,
+      values: [
+        request.requestDate,
+        request.startDate,
+        request.endDate,
+        request.id,
+        request.requestedQuantity,
+        request.contactName,
+        request.contactEmail,
+        request.approved
+      ]
+    }
+
+    axios.post(updateURL, requestBody).then((result) => {
+      console.log(result)
+    })
+  }
+
   getSheetTotal(sheetName, query) {
     let url = `${this.baseURL}&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent('Select count(A)')}`
     if (query) {

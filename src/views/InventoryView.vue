@@ -9,7 +9,7 @@ import googleSheetsService from '../services/google-sheets-service'
 import { sortOptions } from '@/constants/filterOptions'
 import { filterParameters } from '../classes/filter-parameter'
 import router from '@/router/index.js'
-const sheetID = '1V3SJog_ZNjtaEg2k2BJ_6if7cDcCuneS1tWH7cf1e-0'  //move to constants
+const sheetID = import.meta.env.VITE_SHEETID
 const dataResult = ref([])
 const totalResults = ref(0)
 const filterParameterObject = ref(new filterParameters())
@@ -32,6 +32,7 @@ onMounted(async () => {
       filterComponentRef.value.updateFilterText(route.params.filter)
     }
   }
+
   await fetchInventoryData()
 })
 
@@ -175,7 +176,7 @@ function filterUpdate(param) {
   filterParameterObject.value = param
   fetchInventoryData()
 }
-function inventoryItemSelected(item){
+function inventoryItemSelected(item) {
   router.push({
     name: 'inventory-detail',
     params: { id: item.id }
