@@ -9,14 +9,14 @@ export default class emailService {
     let table =
       '<table style="border:1px solid #1C6EA4;background-color:#EEEEEE;width:100%;text-align:left;border-collapse:collapse">'
     table +=
-      '<thead style="background: #1C6EA4;border-bottom: 2px solid #444444;color:#FFFFFF"><tr><th>Date</th><th>Item Id</th><th>Item</th><th>Quantity</th><th>Start Date</th><th>End Date</th></tr></thead>'
+      '<thead style="border:1px solid #1C6EA4;border-collapse:collapse;background: #1C6EA4;border-bottom: 2px solid #444444;color:#FFFFFF"><tr><th style="border:1px solid #1C6EA4;border-collapse:collapse;">Date</th><th style="border:1px solid #1C6EA4;border-collapse:collapse;">Item Id</th><th style="border:1px solid #1C6EA4;border-collapse:collapse;">Item</th><th>Quantity</th><th style="border:1px solid #1C6EA4;border-collapse:collapse;">Start Date</th><th style="border:1px solid #1C6EA4;border-collapse:collapse;">End Date</th></tr></thead>'
     table += '<tr>'
-    table += `<td>${request.requestDate}</td>`
-    table += `<td>${request.id}</td>`
-    table += `<td>${request.itemDescription}</td>`
-    table += `<td>${request.requestedQuantity}</td>`
-    table += `<td>${request.startDate}</td>`
-    table += `<td>${request.endDate}</td>`
+    table += `<td style="border:1px solid #1C6EA4;border-collapse:collapse;">${request.requestDate}</td>`
+    table += `<td style="border:1px solid #1C6EA4;border-collapse:collapse;">${request.id}</td>`
+    table += `<td style="border:1px solid #1C6EA4;border-collapse:collapse;">${request.itemDescription}</td>`
+    table += `<td style="border:1px solid #1C6EA4;border-collapse:collapse;">${request.requestedQuantity}</td>`
+    table += `<td style="border:1px solid #1C6EA4;border-collapse:collapse;">${request.startDate}</td>`
+    table += `<td style="border:1px solid #1C6EA4;border-collapse:collapse;">${request.endDate}</td>`
     table += '</tr>'
     table += '</table>'
     return table
@@ -65,9 +65,9 @@ export default class emailService {
     emailMessage +=
       '<p>The reservation needs to be approved in the inventory sheet before this will show as checked out</p>'
 
-    console.log(emailMessage)
     let templateParams = {
-      message: emailMessage
+      message: emailMessage,
+      to_email: import.meta.env.VITE_SERVICEEMAIL
     }
 
     return new Promise((resolve, reject) => {
