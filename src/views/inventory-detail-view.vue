@@ -152,13 +152,13 @@ function requestCreated(request) {
             <div class="col-2">
               <img
                 v-if="inventoryItem.image && inventoryItem.image.length > 0"
-                :src="`/stem-inv/inventory/${inventoryItem.image}`"
+                :src="`/inventory/${inventoryItem.image}`"
                 class="card-img-top result-image"
                 :alt="inventoryItem.name"
               />
               <img
                 v-if="!inventoryItem.image || inventoryItem.image.length == 0"
-                src="/stem-inv/inventory/no-image.jpg"
+                src="/inventory/no-image.jpg"
                 class="card-img-top result-image"
                 :alt="inventoryItem.name"
               />

@@ -12,13 +12,13 @@ function inventoryItemClicked() {
       <div class="text-center pt-2">
         <img
           v-if="props.data.image"
-          :src="`/stem-inv/inventory/${props.data.image}`"
+          :src="`/inventory/${props.data.image}`"
           class="card-img-top result-image"
           :alt="props.data.name"
         />
         <img
           v-if="!props.data.image"
-          src="/stem-inv/inventory/no-image.jpg"
+          src="/inventory/no-image.jpg"
           class="card-img-top result-image"
           :alt="props.data.name"
         />
