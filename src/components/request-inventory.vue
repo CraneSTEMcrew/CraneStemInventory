@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { inventoryRequest } from '../classes/inventory-request'
+import requestService from '@/services/request-service.js'
 
 const emit = defineEmits(['dismiss', 'requestCreated'])
 const props = defineProps(['isVisible', 'inventoryItem'])
@@ -36,17 +37,18 @@ const validateField = (field) => {
   if (field === 'quantity' && requestForm.quantity.value > props.inventoryItem.quantity) {
     errors.value.quantity = 'Quantity cannot exceed total number available'
   }
+
   if (field === 'startDate' && !requestForm.startDate.value.replace(' ', '').length > 0) {
     errors.value.startDate = 'Start Date is required.'
   }
 
-  if (
-    field === 'startDate' &&
-    requestForm.startDate.value.length > 0 &&
-    new Date(requestForm.startDate.value) < new Date()
-  ) {
-    errors.value.startDate = 'Start Date cannot be before current date'
-  }
+  // if (
+  //   field === 'startDate' &&
+  //   requestForm.startDate.value.length > 0 &&
+  //   new Date(requestForm.startDate.value) < new Date()
+  // ) {
+  //   errors.value.startDate = 'Start Date cannot be before current date'
+  // }
   if (field === 'endDate' && !requestForm.endDate.value.replace(' ', '').length > 0) {
     errors.value.endDate = 'End Date is required.'
   }
@@ -82,8 +84,9 @@ function submitForm() {
   validateField('endDate')
 
   for (const [key, value] of Object.entries(errors.value)) {
-    if (errors[key]) errorCount += value.length > 0 ? 1 : 0
+    errorCount += value.length > 0 ? 1 : 0
   }
+
   if (errorCount == 0) {
     //if no errors are found
     let request = new inventoryRequest(props.inventoryItem.id, props.inventoryItem.name)
@@ -93,9 +96,17 @@ function submitForm() {
     request.contactName = `${requestForm.firstName.value} ${requestForm.lastName.value}`
     request.requestedQuantity = requestForm.quantity.value
 
-    emit('requestCreated', request)
-
-    // Add logic to send data to the server if needed
+    //we need to validate that there is enough during that time to request
+    let svc = new requestService(props.inventoryItem.id)
+    svc.isRequestFeasible(request, props.inventoryItem.quantity).then((result) => {
+      console.log(result)
+      if (result) {
+        emit('requestCreated', request)
+      } else {
+        errors.value.quantity =
+          'The total quantity selected is not available during the times you have selected.'
+      }
+    })
   } else {
     console.log('Form has validation errors. Please correct them.')
   }

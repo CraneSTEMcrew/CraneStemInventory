@@ -112,6 +112,7 @@ export default class googleSheetsService {
       }
       data.push(rowObject)
     }
+
     return data
   }
 }

@@ -10,10 +10,11 @@ import 'v-calendar/style.css'
 import { Calendar } from 'v-calendar'
 import { alertType } from '@/constants/alert-type'
 
-const sheetID = '1V3SJog_ZNjtaEg2k2BJ_6if7cDcCuneS1tWH7cf1e-0' //move to constants
+const sheetID = import.meta.env.VITE_SHEETID
 const props = defineProps(['id'])
 const inventoryItem = ref(null)
 const svc = new googleSheetsService(sheetID)
+
 const emailSvc = new emailService()
 const route = useRoute()
 const currentRoute = ref(null)
@@ -101,25 +102,10 @@ function getFormattedDate(date) {
 
   return year + '-' + month + '-' + day
 }
+function dayClicked(day, e) {
+  console.log(day)
+}
 function requestCreated(request) {
-  // let publicKey = import.meta.env.VITE_EMAILPUBLICKEY
-  // let template = import.meta.env.VITE_EMAILTEMPLATEID
-  // let serviceKey = import.meta.env.VITE_EMAILSERVICEKEY
-  // let emailMessage = `The following request has been created:<br>Requested by: <b>${request.contactName}</b>br>Email: <b>${request.contactEmail}</b>`
-  // emailMessage +=`<p><table>`
-  // let templateParams = {
-  //   message: emailMessage
-  // }
-  // requestDate: request.requestDate,
-  //   id: request.id,
-  //   itemDescription: request.itemDescription,
-  //   requestedQuantity: request.requestedQuantity,
-  //   startDate: request.startDate,
-  //   endDate: request.endDate,
-  //   contactName: request.contactName,
-  //   contactEmail: request.contactEmail,
-  //   from_email: 'somniloquent@gmail.com'
-
   emailSvc.createInternalNotificationEmail(request)
 
   emailSvc
@@ -166,13 +152,13 @@ function requestCreated(request) {
             <div class="col-2">
               <img
                 v-if="inventoryItem.image && inventoryItem.image.length > 0"
-                :src="`/inventory/${inventoryItem.image}`"
+                :src="`/stem-inv/inventory/${inventoryItem.image}`"
                 class="card-img-top result-image"
                 :alt="inventoryItem.name"
               />
               <img
                 v-if="!inventoryItem.image || inventoryItem.image.length == 0"
-                src="/inventory/no-image.jpg"
+                src="/stem-inv/inventory/no-image.jpg"
                 class="card-img-top result-image"
                 :alt="inventoryItem.name"
               />
@@ -209,6 +195,7 @@ function requestCreated(request) {
                   <Calendar
                     :attributes="scheduledDates"
                     @update:pages="updateSchedule"
+                    @dayclick="dayClicked"
                     borderless
                     expanded
                   >
