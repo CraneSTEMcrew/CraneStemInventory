@@ -17,13 +17,15 @@ const staticAvailabilityFilters = JSON.parse(
 )
 
 defineExpose({
-  updateFilterText
+  updateFilterText,
+  updateFilter
 })
 
 function filterTextUpdated() {
   filterParameterObject.value.filterText = filterText.value
   emit('filterUpdated', filterParameterObject.value)
 }
+
 function addToFilterParam() {
   filterParameterObject.value.typeFilter = []
   filterParameterObject.value.subTypeFilter = []
@@ -63,8 +65,47 @@ function addToFilterParam() {
 function updateFilterText(filterVal) {
   filterText.value = filterVal
 }
+function updateFilter(filterParam) {
+  let found = undefined
+  filterText.value = filterParam.filterText
 
-function filterItemUpdated(filterOption, checkedState, parentOption) {
+  if (filterParam.typeFilter.length > 0) {
+    filterParam.typeFilter.forEach((type) => {
+      found = filterOptions.find(
+        (filter) => filter.filterName.toString().toLowerCase() == type.toLowerCase()
+      )
+      if (found) {
+        filterItemUpdated(found, true)
+        if (filterParam.subTypeFilter.length > 0) {
+          filterParam.subTypeFilter.forEach((sub) => {
+            found.subFilters.forEach((val) => {
+              if (val.filterName.toString().toLowerCase() == sub.toLowerCase()) {
+                filterItemUpdated(val, true, found, true)
+                return
+              }
+            })
+          })
+        } else {
+          filterItemUpdated(found, true)
+        }
+      }
+    })
+  }
+}
+function isFilterChecked(filterOption) {
+  let foundFilter = currentFilter.value.find((item) => item.filterName == filterOption.filterName)
+
+  if (foundFilter) return true
+
+  currentFilter.value.forEach((item) => {
+    if (item.subFilters) {
+      foundFilter = item.subFilters.find((subItem) => subItem.filterName == filterOption.filterName)
+      if (foundFilter) return true
+    }
+  })
+}
+function filterItemUpdated(filterOption, checkedState, parentOption, omitOtherChildren) {
+  console.log('hit')
   let mainOption = undefined
   let parentIdx = parentOption
     ? currentFilter.value.indexOf(parentOption)
@@ -72,11 +113,19 @@ function filterItemUpdated(filterOption, checkedState, parentOption) {
   //  let childIdx = undefined
   if (parentOption) {
     mainOption = currentFilter.value[parentIdx]
+
     if (!mainOption) {
       return
     }
-    let childIdx = mainOption.subFilters.indexOf(filterOption)
+    if (omitOtherChildren) mainOption.subFilters = []
 
+    let childIdx = mainOption.subFilters.indexOf(
+      mainOption.subFilters.find(
+        (item) =>
+          item.filterName.toString().toLowerCase() ==
+          filterOption.filterName.toString().toLowerCase()
+      )
+    )
     if (childIdx >= 0 && !checkedState) {
       mainOption.subFilters.splice(childIdx, 1)
     }
@@ -105,6 +154,7 @@ function filterItemUpdated(filterOption, checkedState, parentOption) {
 
 <template>
   <div class="p-0">
+    {{ currentFilter.value }}
     <div class="row pt-2">
       <div class="col"><img src="../assets/NSWCCraneLogo.jpg" /><br /></div>
     </div>
@@ -134,7 +184,11 @@ function filterItemUpdated(filterOption, checkedState, parentOption) {
       <span class="filterType">Availability</span>
       <div class="pt-2 ps-2">
         <div class="form-check" :key="option" v-for="option in staticAvailabilityFilters">
-          <filterCheckbox @filter-updated="filterItemUpdated" :option="option"></filterCheckbox>
+          <filterCheckbox
+            :checked="isFilterChecked(option)"
+            @filter-updated="filterItemUpdated"
+            :option="option"
+          ></filterCheckbox>
         </div>
       </div>
       <div class="row pt-2">
@@ -145,7 +199,11 @@ function filterItemUpdated(filterOption, checkedState, parentOption) {
             :key="option"
             v-for="option in filterOptions.filter((item) => item.FilterType == categoryFilter)"
           >
-            <filterCheckbox @filter-updated="filterItemUpdated" :option="option"></filterCheckbox>
+            <filterCheckbox
+              @filter-updated="filterItemUpdated"
+              :checked="isFilterChecked(option)"
+              :option="option"
+            ></filterCheckbox>
           </div>
         </div>
       </div>
@@ -157,7 +215,11 @@ function filterItemUpdated(filterOption, checkedState, parentOption) {
             :key="option"
             v-for="option in filterOptions.filter((item) => item.FilterType == typeFilter)"
           >
-            <filterCheckbox @filter-updated="filterItemUpdated" :option="option"></filterCheckbox>
+            <filterCheckbox
+              :checked="isFilterChecked(option)"
+              @filter-updated="filterItemUpdated"
+              :option="option"
+            ></filterCheckbox>
           </div>
         </div>
       </div>

@@ -27,9 +27,9 @@ const currentRoute = ref(null)
 onMounted(async () => {
   currentRoute.value = route.fullPath
   if (route.params && route.params.filter) {
-    filterParameterObject.value.filterText = route.params.filter
+    // filterParameterObject.value.filterText = route.params.filter.filterText
     if (filterComponentRef.value) {
-      filterComponentRef.value.updateFilterText(route.params.filter)
+      filterComponentRef.value.updateFilter(JSON.parse(route.params.filter))
     }
   }
 
@@ -177,9 +177,20 @@ function filterUpdate(param) {
   fetchInventoryData()
 }
 function inventoryItemSelected(item) {
+  let param = new filterParameters()
+  if (filterParameterObject.value.subTypeFilter.length > 0) {
+    param.subTypeFilter.push(filterParameterObject.value.subTypeFilter[0].value)
+  }
+  if (filterParameterObject.value.categoryFilter.length > 0) {
+    param.categoryFilter.push(filterParameterObject.value.categoryFilter[0].value)
+  }
+
   router.push({
     name: 'inventory-detail',
-    params: { id: item.id }
+    params: {
+      id: item.id,
+      filter: JSON.stringify(param)
+    }
   })
 }
 </script>
@@ -189,10 +200,10 @@ function inventoryItemSelected(item) {
     <div class="row">
       <div class="col-3">
         <div class="row">
-          <div class="col-4">
-            <span class="fs-4">ALL ITEMS</span>
+          <div class="col-5">
+            <span class="fs-5">ALL ITEMS</span>
           </div>
-          <div class="col pt-2 text-start">
+          <div class="col pt-1 text-start align-middle">
             <span class="fs-6 text-start"
               >{{ totalResults }} {{ totalResults == 1 ? 'result' : 'results' }}</span
             >

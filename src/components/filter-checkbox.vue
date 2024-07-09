@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 
 const isExpanded = ref(false)
 const inputControl = ref(null)
-const props = defineProps(['option'])
+const props = defineProps(['option', 'checked'])
 const emit = defineEmits(['filterUpdated', 'subFilterUpdated'])
 
 const subFilters = ref([])
@@ -11,16 +11,19 @@ const mainFilter = ref({ option: {}, checked: false })
 
 onMounted(() => {
   if (props.option) {
-    mainFilter.value = { option: props.option, checked: false }
+    setTimeout(() => {
+      mainFilter.value = { option: props.option, checked: props.checked ? props.checked : false }
 
-    if (mainFilter.value.option.subFilters.length > 0) {
-      mainFilter.value.option.subFilters.forEach((item) => {
-        subFilters.value.push({
-          option: item,
-          checked: false
+      if (mainFilter.value.option.subFilters.length > 0) {
+        mainFilter.value.option.subFilters.forEach((item) => {
+          subFilters.value.push({
+            option: item,
+            checked: props.checked ? props.checked : false
+          })
         })
-      })
-    }
+      }
+      console.log('ran')
+    }, 300)
   }
 })
 

@@ -21,13 +21,13 @@ function optionsUpdated() {
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-6"></div>
-      <div class="col">
-        <div class="row">
-          <div class="col-4 text-center">
+      <div class="col-4 p-0"></div>
+      <div class="col p-0">
+        <div class="row p-0">
+          <div class="col-4">
             <div class="row">
-              <div class="col text-end pt-1 pe-1">Per Page</div>
-              <div class="col">
+              <div class="col text-end pt-1 pe-0">Per Page</div>
+              <div class="col text-end pe-0">
                 <select
                   class="form-select form-select-sm mb-3"
                   @change="optionsUpdated"
@@ -42,12 +42,12 @@ function optionsUpdated() {
               </div>
             </div>
           </div>
-          <div class="col-4 p-0 text-center">
+          <div class="col-4 p-0 text-end">
             <div class="row">
               <div class="col-5 pe-1 pt-1 text-end">View</div>
               <div class="col">
                 <select
-                  class="form-select form-select-sm mb-3"
+                  class="form-select form-select-sm"
                   @change="optionsUpdated"
                   v-model="pageLayoutConst"
                   aria-label="results view format"
@@ -58,7 +58,7 @@ function optionsUpdated() {
               </div>
             </div>
           </div>
-          <div class="col-4 p-0 text-center">
+          <div class="col-4 p-0 text-end">
             <div class="row">
               <div class="col-5 pe-1 pt-1 text-end">Sort By</div>
               <div class="col">

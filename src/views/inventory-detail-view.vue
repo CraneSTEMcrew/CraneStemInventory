@@ -5,13 +5,15 @@ import requestInventory from '../components/request-inventory.vue'
 import contactDetail from '../components/contact-detail.vue'
 import alert from '../components/common/alert-component.vue'
 import googleSheetsService from '@/services/google-sheets-service.js'
+import { filterParameters } from '../classes/filter-parameter'
 import emailService from '@/services/email-service.js'
 import 'v-calendar/style.css'
 import { Calendar } from 'v-calendar'
-import { alertType } from '@/constants/alert-type'
+import router from '@/router/index.js'
+import imageService from '../services/image-service'
 
 const sheetID = import.meta.env.VITE_SHEETID
-const props = defineProps(['id'])
+const props = defineProps(['id', 'filter'])
 const inventoryItem = ref(null)
 const svc = new googleSheetsService(sheetID)
 
@@ -21,11 +23,13 @@ const currentRoute = ref(null)
 const scheduledDates = ref([])
 const showModal = ref(false)
 const alertComponent = ref(null)
+const appliedFilters = ref({})
 let currentMonth = undefined
 
 onMounted(() => {
   currentMonth = new Date().getMonth() + 1
   currentRoute.value = route.fullPath
+  appliedFilters.value = JSON.parse(props.filter)
   if (props.id) {
     loadInventoryDetails(props.id)
   }
@@ -107,7 +111,6 @@ function dayClicked(day, e) {
 }
 function requestCreated(request) {
   emailSvc.createInternalNotificationEmail(request)
-
   emailSvc
     .createConfirmationEmail(request)
     .then(() => {
@@ -126,6 +129,33 @@ function requestCreated(request) {
         alertType.ERROR
       )
     })
+}
+function navigateBack(filterType) {
+  let param = new filterParameters()
+  switch (filterType.toString().toLowerCase()) {
+    case 'filter':
+      param.typeFilter.push(inventoryItem.value.type)
+      console.log(param)
+      break
+    case 'subfilter':
+      param.typeFilter.push(inventoryItem.value.type)
+      param.subTypeFilter.push(appliedFilters.value.subTypeFilter[0])
+      break
+    case 'category':
+      param.categoryFilter.push(appliedFilters.value.categoryFilter[0])
+      break
+  }
+  //
+  // if (isCategory) {
+  //   param.typeFilter.push(inventoryItem.value.type)
+  // } else {
+  //   param.typeFilter.push(inventoryItem.value.type)
+  //   param.subTypeFilter.push(inventoryItem.value.subtype.split(',')[0])
+  // }
+  router.push({
+    name: 'inventory',
+    params: { filter: JSON.stringify(param) }
+  })
 }
 </script>
 <template>
@@ -146,19 +176,36 @@ function requestCreated(request) {
       <div class="row">
         <div class="col">
           <div class="row">
-            <div class="col">navigation detail</div>
+            <div class="col text-start navigation">
+              <button @click="navigateBack('filter')" type="button" class="btn btn-link">
+                {{ inventoryItem.type }}
+              </button>
+
+              <i
+                v-if="appliedFilters.subTypeFilter.length > 0"
+                class="bi bi-chevron-double-right"
+              ></i>
+              <button
+                v-if="appliedFilters.subTypeFilter.length > 0"
+                @click="navigateBack('subfilter')"
+                type="button"
+                class="btn btn-link"
+              >
+                {{ appliedFilters.subTypeFilter[0] }}</button
+              ><i class="bi bi-chevron-double-right"></i
+              ><button @click="navigateBack('category')" type="button" class="btn btn-link">
+                {{
+                  appliedFilters.categoryFilter.length > 0
+                    ? appliedFilters.categoryFilter[0]
+                    : inventoryItem.category.split(',')[0]
+                }}
+              </button>
+            </div>
           </div>
           <div class="row">
             <div class="col-2">
               <img
-                v-if="inventoryItem.image && inventoryItem.image.length > 0"
-                :src="`/inventory/${inventoryItem.image}`"
-                class="card-img-top result-image"
-                :alt="inventoryItem.name"
-              />
-              <img
-                v-if="!inventoryItem.image || inventoryItem.image.length == 0"
-                src="/inventory/no-image.jpg"
+                :src="imageService.formatImageUrl(inventoryItem.image)"
                 class="card-img-top result-image"
                 :alt="inventoryItem.name"
               />
@@ -166,7 +213,7 @@ function requestCreated(request) {
             <div class="col text-start">
               <div class="row">
                 <div class="col">
-                  <p>{{ inventoryItem.description }}</p>
+                  <p v-html="inventoryItem.description"></p>
                   <button
                     v-if="inventoryItem.infoURL && inventoryItem.infoURL.length > 0"
                     v-on:click="viewAdditionalInfo"
@@ -185,7 +232,7 @@ function requestCreated(request) {
                   <p class="pt-4">More</p>
                   <span
                     :key="tag"
-                    v-for="tag in inventoryItem.subtype.split(',')"
+                    v-for="tag in inventoryItem.category.split(',')"
                     class="badge rounded-pill text-bg-info me-2 text-light tag"
                   >
                     {{ tag }}
@@ -235,5 +282,14 @@ function requestCreated(request) {
 .tag:hover {
   cursor: pointer;
   background-color: #3cd6f4 !important;
+}
+.navigation {
+  button {
+    padding-left: 0;
+  }
+  i {
+    font-size: 0.5rem;
+    padding-right: 0.5rem;
+  }
 }
 </style>

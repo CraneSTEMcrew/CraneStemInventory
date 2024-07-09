@@ -1,8 +1,41 @@
 import googleSheetsService from './google-sheets-service'
+import axios from 'axios'
 export default class requestService {
   constructor(id) {
     this.inventoryId = id
     this.svc = new googleSheetsService(import.meta.env.VITE_SHEETID)
+  }
+
+  insertRequest(request) {
+    console.log(request)
+    var data = {
+      range: 'reservations!A1:H1',
+      majorDimension: 'ROWS',
+      values: [
+        [
+          'Data',
+          new Date().toString('YYYY-MM-DD'),
+          request.startDate,
+          request.endDate,
+          this.inventoryId,
+          request.requestedQuantity,
+          request.contactName,
+          request.contactEmail,
+          false
+        ]
+      ]
+    }
+    axios
+      .post(
+        `https://sheets.googleapis.com/v4/spreadsheets/${import.meta.env.VITE_SHEETID}/values/reservations!A1:H1:append`,
+        data
+      )
+      .then((result) => {
+        console.log(result)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   isRequestFeasible(request, qtyAvailable) {

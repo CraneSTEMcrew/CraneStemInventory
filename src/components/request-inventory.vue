@@ -42,13 +42,13 @@ const validateField = (field) => {
     errors.value.startDate = 'Start Date is required.'
   }
 
-  // if (
-  //   field === 'startDate' &&
-  //   requestForm.startDate.value.length > 0 &&
-  //   new Date(requestForm.startDate.value) < new Date()
-  // ) {
-  //   errors.value.startDate = 'Start Date cannot be before current date'
-  // }
+  if (
+    field === 'startDate' &&
+    requestForm.startDate.value.length > 0 &&
+    new Date(requestForm.startDate.value) < new Date()
+  ) {
+    errors.value.startDate = 'Start Date cannot be before current date'
+  }
   if (field === 'endDate' && !requestForm.endDate.value.replace(' ', '').length > 0) {
     errors.value.endDate = 'End Date is required.'
   }
@@ -99,9 +99,9 @@ function submitForm() {
     //we need to validate that there is enough during that time to request
     let svc = new requestService(props.inventoryItem.id)
     svc.isRequestFeasible(request, props.inventoryItem.quantity).then((result) => {
-      console.log(result)
       if (result) {
         emit('requestCreated', request)
+        //svc.insertRequest(request)
       } else {
         errors.value.quantity =
           'The total quantity selected is not available during the times you have selected.'

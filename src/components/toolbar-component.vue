@@ -38,14 +38,15 @@ function filterTextUpdated() {
     <div class="row tools-row">
       <div
         :class="{ active: router.currentRoute.value.name == 'home' }"
-        class="col-1 menu-item text-center menu-item"
+        class="col-1 menu-item text-start menu-item"
         @click="() => router.push('/')"
       >
         <i class="bi bi-house-door"></i> Home
       </div>
       <div
         :class="{ active: router.currentRoute.value.name == 'inventory' }"
-        class="col-1 menu-item text-center menu-item"
+        class="col-1 menu-item text-start menu-item"
+        style="width: 10%"
         @click="() => router.push('/inventory')"
       >
         <i class="bi bi-grid"></i> Inventory

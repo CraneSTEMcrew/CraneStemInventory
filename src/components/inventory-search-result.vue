@@ -1,6 +1,7 @@
 <script setup>
 const props = defineProps(['data', 'isGrid'])
 const emit = defineEmits(['itemSelected'])
+import imageService from '../services/image-service'
 
 function inventoryItemClicked() {
   emit('itemSelected', props.data)
@@ -11,14 +12,7 @@ function inventoryItemClicked() {
     <div class="card" title="View Details" @click="inventoryItemClicked">
       <div class="text-center pt-2">
         <img
-          v-if="props.data.image"
-          :src="`/inventory/${props.data.image}`"
-          class="card-img-top result-image"
-          :alt="props.data.name"
-        />
-        <img
-          v-if="!props.data.image"
-          src="/inventory/no-image.jpg"
+          :src="imageService.formatImageUrl(props.data.image)"
           class="card-img-top result-image"
           :alt="props.data.name"
         />
@@ -50,14 +44,7 @@ function inventoryItemClicked() {
         <div class="row">
           <div class="col-2">
             <img
-              v-if="props.data.image"
-              :src="`/inventory/${props.data.image}`"
-              class="card-img-top result-image"
-              :alt="props.data.name"
-            />
-            <img
-              v-if="!props.data.image"
-              src="/inventory/no-image.jpg"
+              :src="imageService.formatImageUrl(props.data.image)"
               class="card-img-top result-image"
               :alt="props.data.name"
             />

@@ -39,6 +39,7 @@ const inventoryFilters = [
   new inventoryfilter('Teacher Resources', categoryFilter, 'J'),
   new inventoryfilter('Tools', categoryFilter, 'J'),
   new inventoryfilter('Upper Elementary', categoryFilter, 'J'),
+  new inventoryfilter('Lego Sets', categoryFilter, 'J'),
   new inventoryfilter('Education', typeFilter, 'H', [
     new inventoryfilter('Curriculum', typeFilter, 'I'),
     new inventoryfilter('Education Kits', typeFilter, 'I'),
@@ -56,7 +57,9 @@ const inventoryFilters = [
     (new inventoryfilter('General Measurement', typeFilter, 'I'),
     new inventoryfilter('Lab Instruments & Equipment', typeFilter, 'I'))
   ]),
-  new inventoryfilter('Toys & Games', typeFilter, 'H')
+  new inventoryfilter('Toys & Games', typeFilter, 'H', [
+    new inventoryfilter('Legos', typeFilter, 'I')
+  ])
 ]
 
 export {
