@@ -18,11 +18,10 @@ onMounted(() => {
         mainFilter.value.option.subFilters.forEach((item) => {
           subFilters.value.push({
             option: item,
-            checked: props.checked ? props.checked : false
+            checked: item.checked
           })
         })
       }
-      console.log('ran')
     }, 300)
   }
 })
@@ -35,29 +34,28 @@ function parentChecked(option, isOptionChecked) {
   if (subFilters.value.length > 0) {
     subFilters.value.forEach((item) => {
       item.checked = isOptionChecked
-      // emit('filterUpdated', item.option, isOptionChecked, mainFilter.value.option)
     })
   }
 }
 
 function childChecked(option, isOptionChecked) {
   option.checked = isOptionChecked
+
   if (option.checked && !mainFilter.value.checked) {
     mainFilter.value.checked = true
     emit('filterUpdated', mainFilter.value.option, true)
     setTimeout(() => {
       emit('filterUpdated', option.option, isOptionChecked, mainFilter.value.option)
     }, 500)
-
     return
   }
-
-  emit('filterUpdated', option.option, isOptionChecked, mainFilter.value.option)
 
   if (subFilters.value.filter((item) => item.checked).length == 0) {
     mainFilter.value.checked = false
     emit('filterUpdated', mainFilter.value.option, false)
+    return
   }
+  emit('filterUpdated', option.option, isOptionChecked, mainFilter.value.option)
 }
 </script>
 

@@ -7,7 +7,7 @@ class sortOption {
 class inventoryfilter {
   constructor(name, type, column, subFilters) {
     this.filterName = name
-    this.FilterType = type
+    this.filterType = type
     this.filterColumn = column
     this.subFilters = subFilters
     if (!subFilters) {

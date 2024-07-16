@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import nightwatchPlugin from 'vite-plugin-nightwatch'
 import VueDevTools from 'vite-plugin-vue-devtools'
-import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,7 +14,6 @@ export default defineConfig({
       renderPage: './nightwatch/index.html'
     }),
     VueDevTools()
-    //basicSsl()
   ],
   resolve: {
     alias: {

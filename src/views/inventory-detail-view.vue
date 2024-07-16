@@ -29,7 +29,9 @@ let currentMonth = undefined
 onMounted(() => {
   currentMonth = new Date().getMonth() + 1
   currentRoute.value = route.fullPath
+  console.log(props)
   appliedFilters.value = JSON.parse(props.filter)
+  console.log(appliedFilters)
   if (props.id) {
     loadInventoryDetails(props.id)
   }
@@ -39,7 +41,6 @@ watch(
   () => {
     if (currentRoute.value && route.fullPath !== currentRoute.value) {
       currentRoute.value = route.fullPath
-      console.log(route)
       loadInventoryDetails(currentRoute.value.p)
     }
   },
@@ -49,6 +50,7 @@ function loadInventoryDetails(id) {
   //load the inventory detail into the inventoryItem var
   svc.getFirstRecord('inventory', 'A', id).then((result) => {
     inventoryItem.value = result
+    console.log(result)
     getSchedule(new Date().toDateString())
   })
 }
@@ -132,26 +134,27 @@ function requestCreated(request) {
 }
 function navigateBack(filterType) {
   let param = new filterParameters()
+
   switch (filterType.toString().toLowerCase()) {
     case 'filter':
       param.typeFilter.push(inventoryItem.value.type)
-      console.log(param)
       break
     case 'subfilter':
       param.typeFilter.push(inventoryItem.value.type)
-      param.subTypeFilter.push(appliedFilters.value.subTypeFilter[0])
+      param.subTypeFilter.push(
+        appliedFilters.value.subTypeFilter.length > 0
+          ? appliedFilters.value.subTypeFilter[0]
+          : inventoryItem.value.subtype.split(',')[0]
+      )
       break
     case 'category':
-      param.categoryFilter.push(appliedFilters.value.categoryFilter[0])
+      param.categoryFilter.push(
+        appliedFilters.value.categoryFilter.length > 0
+          ? appliedFilters.value.categoryFilter[0]
+          : inventoryItem.value.category.split(',')[0]
+      )
       break
   }
-  //
-  // if (isCategory) {
-  //   param.typeFilter.push(inventoryItem.value.type)
-  // } else {
-  //   param.typeFilter.push(inventoryItem.value.type)
-  //   param.subTypeFilter.push(inventoryItem.value.subtype.split(',')[0])
-  // }
   router.push({
     name: 'inventory',
     params: { filter: JSON.stringify(param) }
@@ -180,18 +183,21 @@ function navigateBack(filterType) {
               <button @click="navigateBack('filter')" type="button" class="btn btn-link">
                 {{ inventoryItem.type }}
               </button>
-
               <i
-                v-if="appliedFilters.subTypeFilter.length > 0"
+                v-if="appliedFilters.subTypeFilter.length > 0 || inventoryItem.subtype.length > 0"
                 class="bi bi-chevron-double-right"
               ></i>
               <button
-                v-if="appliedFilters.subTypeFilter.length > 0"
+                v-if="appliedFilters.subTypeFilter.length > 0 || inventoryItem.subtype.length > 0"
                 @click="navigateBack('subfilter')"
                 type="button"
                 class="btn btn-link"
               >
-                {{ appliedFilters.subTypeFilter[0] }}</button
+                {{
+                  appliedFilters.subTypeFilter.length > 0
+                    ? appliedFilters.subTypeFilter[0]
+                    : inventoryItem.subtype.split(',')[0]
+                }}</button
               ><i class="bi bi-chevron-double-right"></i
               ><button @click="navigateBack('category')" type="button" class="btn btn-link">
                 {{

@@ -28,6 +28,7 @@ onMounted(async () => {
   currentRoute.value = route.fullPath
   if (route.params && route.params.filter) {
     // filterParameterObject.value.filterText = route.params.filter.filterText
+
     if (filterComponentRef.value) {
       filterComponentRef.value.updateFilter(JSON.parse(route.params.filter))
     }
@@ -137,7 +138,6 @@ function fetchInventoryData() {
       dataResult.value = []
       return
     }
-
     svc
       .GetSheetData(
         'inventory',
@@ -178,6 +178,7 @@ function filterUpdate(param) {
 }
 function inventoryItemSelected(item) {
   let param = new filterParameters()
+
   if (filterParameterObject.value.subTypeFilter.length > 0) {
     param.subTypeFilter.push(filterParameterObject.value.subTypeFilter[0].value)
   }
