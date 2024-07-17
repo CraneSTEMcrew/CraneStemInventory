@@ -68,7 +68,24 @@ const validateField = (field) => {
     errors.value.endDate = 'End Date cannot be before start date'
   }
 }
-
+defineExpose({
+  setValues,
+  reset
+})
+function setValues(startDate, qty) {
+  if (startDate) {
+    let suggestedDate = startDate.toISOString().split('T')
+    requestForm.startDate.value = suggestedDate[0]
+  }
+}
+function reset() {
+  requestForm.firstName.value = ''
+  requestForm.lastName.value = ''
+  requestForm.email.value = ''
+  requestForm.quantity.value = ''
+  requestForm.startDate.value = ''
+  requestForm.endDate.value = ''
+}
 function dismiss() {
   emit('dismiss')
 }
@@ -101,7 +118,7 @@ function submitForm() {
     svc.isRequestFeasible(request, props.inventoryItem.quantity).then((result) => {
       if (result) {
         emit('requestCreated', request)
-        //svc.insertRequest(request)
+        reset()
       } else {
         errors.value.quantity =
           'The total quantity selected is not available during the times you have selected.'

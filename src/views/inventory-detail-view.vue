@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import requestInventory from '../components/request-inventory.vue'
 import contactDetail from '../components/contact-detail.vue'
 import alert from '../components/common/alert-component.vue'
+import { alertType } from '../constants/alert-type'
 import googleSheetsService from '@/services/google-sheets-service.js'
 import { filterParameters } from '../classes/filter-parameter'
 import emailService from '@/services/email-service.js'
@@ -24,6 +25,7 @@ const scheduledDates = ref([])
 const showModal = ref(false)
 const alertComponent = ref(null)
 const appliedFilters = ref({})
+const requestComponent = ref(null)
 let currentMonth = undefined
 
 onMounted(() => {
@@ -91,7 +93,8 @@ function updateSchedule(val) {
     getSchedule(`${val[0].month}-01-${val[0].year}`)
   }
 }
-function showRequestForm() {
+function showRequestForm(isReset) {
+  if (isReset == true) requestComponent.value.reset()
   showModal.value = true
 }
 function viewAdditionalInfo() {
@@ -109,7 +112,9 @@ function getFormattedDate(date) {
   return year + '-' + month + '-' + day
 }
 function dayClicked(day, e) {
-  console.log(day)
+  if (day.date < new Date()) return
+  requestComponent.value.setValues(day.date)
+  showRequestForm()
 }
 function requestCreated(request) {
   emailSvc.createInternalNotificationEmail(request)
@@ -227,7 +232,7 @@ function navigateBack(filterType, tagVal) {
                   />
                 </div>
                 <div class="col-12 text-center pt-4">
-                  <button @click="showRequestForm" class="btn btn-warning">Request</button>
+                  <button @click="showRequestForm(true)" class="btn btn-warning">Request</button>
                 </div>
               </div>
 
@@ -286,6 +291,7 @@ function navigateBack(filterType, tagVal) {
       :is-visible="showModal"
       :inventory-item="inventoryItem"
       @requestCreated="requestCreated"
+      ref="requestComponent"
     ></requestInventory>
   </div>
 </template>
