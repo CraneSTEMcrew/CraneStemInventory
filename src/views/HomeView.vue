@@ -100,7 +100,7 @@ import contactDetail from '../components/contact-detail.vue'
           </div>
         </div>
       </div>
-      <div class="col-3 align-top">
+      <div class="col-lg-3 col-md-4 align-top">
         <contactDetail></contactDetail>
       </div>
     </div>

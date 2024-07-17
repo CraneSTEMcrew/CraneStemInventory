@@ -36,20 +36,23 @@ function filterTextUpdated() {
 <template>
   <div id="tool-bar" class="p-0">
     <div class="row tools-row">
-      <div
-        :class="{ active: router.currentRoute.value.name == 'home' }"
-        class="col-1 menu-item text-start menu-item"
-        @click="() => router.push('/')"
-      >
-        <i class="bi bi-house-door"></i> Home
-      </div>
-      <div
-        :class="{ active: router.currentRoute.value.name == 'inventory' }"
-        class="col-1 menu-item text-start menu-item"
-        style="width: 10%"
-        @click="() => router.push('/inventory')"
-      >
-        <i class="bi bi-grid"></i> Inventory
+      <div class="col-lg-4 col-xl-3 col-md-5">
+        <div class="row">
+          <div
+            :class="{ active: router.currentRoute.value.name == 'home' }"
+            class="col-1 col-md-5 menu-item text-start menu-item"
+            @click="() => router.push('/')"
+          >
+            <i class="bi bi-house-door"></i> Home
+          </div>
+          <div
+            :class="{ active: router.currentRoute.value.name == 'inventory' }"
+            class="col-1 col-md-6 menu-item text-start menu-item"
+            @click="() => router.push('/inventory')"
+          >
+            <i class="bi bi-grid"></i> Inventory
+          </div>
+        </div>
       </div>
 
       <div ref="searchBoxCtrl" class="col text-end pt-2">
@@ -151,10 +154,16 @@ function filterTextUpdated() {
     border-color 0.15s ease-in-out,
     box-shadow 0.15s ease-in-out;
   text-indent: 10px;
-  width: 10em;
+  width: 30%;
+  @media (max-width: 768px) {
+    width: 50%;
+  }
 }
 .search-box-input-large {
-  width: 30em;
+  width: 50%;
+  @media (max-width: 768px) {
+    width: 70%;
+  }
   text-indent: 10px;
 }
 

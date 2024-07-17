@@ -132,7 +132,7 @@ function requestCreated(request) {
       )
     })
 }
-function navigateBack(filterType) {
+function navigateBack(filterType, tagVal) {
   let param = new filterParameters()
 
   switch (filterType.toString().toLowerCase()) {
@@ -148,6 +148,10 @@ function navigateBack(filterType) {
       )
       break
     case 'category':
+      if (tagVal != undefined) {
+        param.categoryFilter.push(tagVal)
+        break
+      }
       param.categoryFilter.push(
         appliedFilters.value.categoryFilter.length > 0
           ? appliedFilters.value.categoryFilter[0]
@@ -180,7 +184,7 @@ function navigateBack(filterType) {
         <div class="col">
           <div class="row">
             <div class="col text-start navigation">
-              <button @click="navigateBack('filter')" type="button" class="btn btn-link">
+              <button @click="navigateBack('filter')" type="button" class="btn btn-link text-info">
                 {{ inventoryItem.type }}
               </button>
               <i
@@ -191,7 +195,7 @@ function navigateBack(filterType) {
                 v-if="appliedFilters.subTypeFilter.length > 0 || inventoryItem.subtype.length > 0"
                 @click="navigateBack('subfilter')"
                 type="button"
-                class="btn btn-link"
+                class="btn btn-link text-info"
               >
                 {{
                   appliedFilters.subTypeFilter.length > 0
@@ -199,7 +203,11 @@ function navigateBack(filterType) {
                     : inventoryItem.subtype.split(',')[0]
                 }}</button
               ><i class="bi bi-chevron-double-right"></i
-              ><button @click="navigateBack('category')" type="button" class="btn btn-link">
+              ><button
+                @click="navigateBack('category')"
+                type="button"
+                class="btn btn-link text-info"
+              >
                 {{
                   appliedFilters.categoryFilter.length > 0
                     ? appliedFilters.categoryFilter[0]
@@ -209,14 +217,23 @@ function navigateBack(filterType) {
             </div>
           </div>
           <div class="row">
-            <div class="col-2">
-              <img
-                :src="imageService.formatImageUrl(inventoryItem.image)"
-                class="card-img-top result-image"
-                :alt="inventoryItem.name"
-              />
+            <div class="col-1 col-md-3">
+              <div class="row">
+                <div class="col-12 text-center">
+                  <img
+                    :src="imageService.formatImageUrl(inventoryItem.image)"
+                    class="card-img-top result-image"
+                    :alt="inventoryItem.name"
+                  />
+                </div>
+                <div class="col-12 text-center pt-4">
+                  <button @click="showRequestForm" class="btn btn-warning">Request</button>
+                </div>
+              </div>
+
+              <div class="container-fluid text-center"></div>
             </div>
-            <div class="col text-start">
+            <div class="col col-md-9 text-start">
               <div class="row">
                 <div class="col">
                   <p v-html="inventoryItem.description"></p>
@@ -224,27 +241,27 @@ function navigateBack(filterType) {
                     v-if="inventoryItem.infoURL && inventoryItem.infoURL.length > 0"
                     v-on:click="viewAdditionalInfo"
                     type="button"
-                    class="btn btn-info text-light"
+                    class="btn btn-link text-info ps-0"
                   >
                     View Additional File
                   </button>
-                  <p class="pt-4">
-                    Current Number Available: <b>{{ inventoryItem.available }}</b>
+                  <p class="pt-4 h6">
+                    Current Number Available: <i>{{ inventoryItem.available }}</i>
                   </p>
                 </div>
               </div>
               <div class="row">
                 <div class="col">
-                  <p class="pt-4">More</p>
                   <span
                     :key="tag"
+                    @click="navigateBack('category', tag)"
                     v-for="tag in inventoryItem.category.split(',')"
                     class="badge rounded-pill text-bg-info me-2 text-light tag"
                   >
                     {{ tag }}
                   </span>
 
-                  <p class="pt-4">Availability</p>
+                  <p class="pt-4 h6">Availability</p>
                   <Calendar
                     :attributes="scheduledDates"
                     @update:pages="updateSchedule"
@@ -252,13 +269,6 @@ function navigateBack(filterType) {
                     borderless
                     expanded
                   >
-                    <template #footer>
-                      <div class="container-fluid text-center">
-                        <button @click="showRequestForm" class="btn btn-warning">
-                          Request {{ inventoryItem.name }}
-                        </button>
-                      </div>
-                    </template>
                   </Calendar>
                 </div>
               </div>
@@ -266,7 +276,7 @@ function navigateBack(filterType) {
           </div>
         </div>
 
-        <div class="col-3">
+        <div class="col-md-12 col-lg-3">
           <contactDetail></contactDetail>
         </div>
       </div>

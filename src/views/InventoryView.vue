@@ -199,7 +199,7 @@ function inventoryItemSelected(item) {
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-3">
+      <div class="col-xl-3 col-lg-4 col-md-5">
         <div class="row">
           <div class="col-5">
             <span class="fs-5">ALL ITEMS</span>
@@ -213,7 +213,7 @@ function inventoryItemSelected(item) {
       </div>
     </div>
     <div class="row">
-      <div class="col-3">
+      <div class="col-lg-3 col-xl-2 col-md-4">
         <div class="container-fluid p-0">
           <filterComponent ref="filterComponentRef" @filterUpdated="filterUpdate"></filterComponent>
         </div>

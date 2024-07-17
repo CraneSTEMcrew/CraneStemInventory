@@ -8,7 +8,7 @@ function inventoryItemClicked() {
 }
 </script>
 <template>
-  <div class="col-4 inventory-result" v-if="props.isGrid">
+  <div class="col-lg-4 col-md-6 inventory-result" v-if="props.isGrid">
     <div class="card" title="View Details" @click="inventoryItemClicked">
       <div class="text-center pt-2">
         <img

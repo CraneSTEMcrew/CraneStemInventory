@@ -21,8 +21,7 @@ function optionsUpdated() {
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-4 p-0"></div>
-      <div class="col p-0">
+      <div class="col col-lg-8 col-xl-6 p-0 offset-lg-4 offset-xl-6">
         <div class="row p-0">
           <div class="col-4">
             <div class="row">
