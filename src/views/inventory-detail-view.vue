@@ -48,6 +48,7 @@ watch(
   },
   { deep: true, immediate: true }
 )
+
 function loadInventoryDetails(id) {
   //load the inventory detail into the inventoryItem var
   svc.getFirstRecord('inventory', 'A', id).then((result) => {
@@ -56,6 +57,7 @@ function loadInventoryDetails(id) {
     getSchedule(new Date().toDateString())
   })
 }
+
 function getSchedule(dateVal) {
   var date = new Date(dateVal),
     y = date.getFullYear(),
@@ -86,6 +88,7 @@ function getSchedule(dateVal) {
       })
     })
 }
+
 function updateSchedule(val) {
   if (currentMonth != val[0].month) {
     currentMonth = val[0].month
@@ -93,13 +96,16 @@ function updateSchedule(val) {
     getSchedule(`${val[0].month}-01-${val[0].year}`)
   }
 }
+
 function showRequestForm(isReset) {
   if (isReset == true) requestComponent.value.reset()
   showModal.value = true
 }
+
 function viewAdditionalInfo() {
   window.open(inventoryItem.value.infoURL)
 }
+
 function getFormattedDate(date) {
   var year = date.getFullYear()
 
@@ -111,11 +117,13 @@ function getFormattedDate(date) {
 
   return year + '-' + month + '-' + day
 }
+
 function dayClicked(day, e) {
   if (day.date < new Date()) return
   requestComponent.value.setValues(day.date)
   showRequestForm()
 }
+
 function requestCreated(request) {
   emailSvc.createInternalNotificationEmail(request)
   emailSvc
@@ -137,6 +145,7 @@ function requestCreated(request) {
       )
     })
 }
+
 function navigateBack(filterType, tagVal) {
   let param = new filterParameters()
 
@@ -178,10 +187,10 @@ function navigateBack(filterType, tagVal) {
         <div class="col">
           <span class="fs-4">{{ inventoryItem.name }}</span>
           <span v-if="inventoryItem.available > 0" class="badge rounded-pill text-bg-primary ms-2"
-            >In Stock now</span
+          >In Stock now</span
           >
           <span v-if="inventoryItem.available == 0" class="badge rounded-pill text-bg-danger ms-2"
-            >Unavailable</span
+          >Unavailable</span
           >
         </div>
       </div>
@@ -206,9 +215,12 @@ function navigateBack(filterType, tagVal) {
                   appliedFilters.subTypeFilter.length > 0
                     ? appliedFilters.subTypeFilter[0]
                     : inventoryItem.subtype.split(',')[0]
-                }}</button
-              ><i class="bi bi-chevron-double-right"></i
-              ><button
+                }}
+              </button
+              >
+              <i class="bi bi-chevron-double-right"></i
+              >
+              <button
                 @click="navigateBack('category')"
                 type="button"
                 class="btn btn-link text-info"
@@ -265,7 +277,6 @@ function navigateBack(filterType, tagVal) {
                   >
                     {{ tag }}
                   </span>
-
                   <p class="pt-4 h6">Availability</p>
                   <Calendar
                     :attributes="scheduledDates"
@@ -280,7 +291,6 @@ function navigateBack(filterType, tagVal) {
             </div>
           </div>
         </div>
-
         <div class="col-md-12 col-lg-3">
           <contactDetail></contactDetail>
         </div>
@@ -301,14 +311,17 @@ function navigateBack(filterType, tagVal) {
   max-width: 10rem;
   min-width: 10rem;
 }
+
 .tag:hover {
   cursor: pointer;
   background-color: #3cd6f4 !important;
 }
+
 .navigation {
   button {
     padding-left: 0;
   }
+
   i {
     font-size: 0.5rem;
     padding-right: 0.5rem;

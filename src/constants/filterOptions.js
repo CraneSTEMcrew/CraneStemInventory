@@ -67,5 +67,6 @@ export {
   availabilityFilter,
   categoryFilter,
   typeFilter,
-  sortOptions
+  sortOptions,
+  sortOption
 }
