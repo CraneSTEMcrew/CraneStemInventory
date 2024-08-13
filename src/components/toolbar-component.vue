@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import router from '@/router'
+import { filterParameters } from '@/classes/filter-parameter.js'
 const filterText = ref('')
 const isSearchFocused = reactive({
   value: false
@@ -23,9 +24,11 @@ function clearFilter() {
 }
 function filterTextUpdated() {
   if (!filterText.value || filterText.value.length == 0) return
+  let param = new filterParameters()
+  param.filterText=filterText.value
   router.push({
     name: 'inventory',
-    params: { filter: filterText.value }
+    params: { filter: JSON.stringify(param) }
   })
   filterText.value = ''
   isSearchFocused.value = false

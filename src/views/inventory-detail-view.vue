@@ -31,9 +31,7 @@ let currentMonth = undefined
 onMounted(() => {
   currentMonth = new Date().getMonth() + 1
   currentRoute.value = route.fullPath
-  console.log(props)
   appliedFilters.value = JSON.parse(props.filter)
-  console.log(appliedFilters)
   if (props.id) {
     loadInventoryDetails(props.id)
   }
@@ -53,7 +51,6 @@ function loadInventoryDetails(id) {
   //load the inventory detail into the inventoryItem var
   svc.getFirstRecord('inventory', 'A', id).then((result) => {
     inventoryItem.value = result
-    console.log(result)
     getSchedule(new Date().toDateString())
   })
 }

@@ -42,8 +42,7 @@ watch(
   () => {
     if (currentRoute.value && route.fullPath !== currentRoute.value) {
       currentRoute.value = route.fullPath
-      filterParameterObject.value.filterText = route.params.filter
-      filterComponentRef.value.updateFilterText(route.params.filter)
+      filterComponentRef.value.updateFilter(JSON.parse(route.params.filter))
       fetchInventoryData()
     }
   },

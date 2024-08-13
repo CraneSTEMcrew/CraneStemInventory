@@ -74,9 +74,14 @@ function updateFilterText(filterVal) {
   filterText.value = filterVal
 }
 function updateFilter(filterParam) {
-  console.log(filterParam)
   let found = undefined
   let subFound = undefined
+
+  if (filterParam.filterText && filterParam.filterText.length> 0){
+    filterParameterObject.value.filterText = filterParam.filterText
+    updateFilterText(filterParam.filterText)
+    emit('filterUpdated', filterParameterObject.value)
+  }
 
   if (filterParam.typeFilter.length > 0) {
     filterParam.typeFilter.forEach((type) => {
