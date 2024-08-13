@@ -12,6 +12,7 @@ const requestForm = {
   email: ref(''),
   quantity: ref(0),
   startDate: ref(''),
+  numberOfStudents: ref(0),
   endDate: ref('')
 }
 
@@ -30,8 +31,12 @@ const validateField = (field) => {
     errors.value.lastName = 'Last Name is required.'
   }
 
-  if (field === 'quantity' && requestForm.quantity.value == 0) {
+  if (field === 'quantity' && requestForm.quantity.value <= 0) {
     errors.value.quantity = 'Quantity is required.'
+  }
+
+  if (field === 'numberOfStudents' && requestForm.numberOfStudents.value <= 0) {
+    errors.value.numberOfStudents = 'Number of Students Served is required.'
   }
 
   if (field === 'quantity' && requestForm.quantity.value > props.inventoryItem.quantity) {
@@ -72,7 +77,7 @@ defineExpose({
   setValues,
   reset
 })
-function setValues(startDate, qty) {
+function setValues(startDate) {
   if (startDate) {
     let suggestedDate = startDate.toISOString().split('T')
     requestForm.startDate.value = suggestedDate[0]
@@ -82,7 +87,8 @@ function reset() {
   requestForm.firstName.value = ''
   requestForm.lastName.value = ''
   requestForm.email.value = ''
-  requestForm.quantity.value = ''
+  requestForm.quantity.value = 0
+  requestForm.numberOfStudents.value =0
   requestForm.startDate.value = ''
   requestForm.endDate.value = ''
 }
@@ -97,6 +103,7 @@ function submitForm() {
   validateField('lastName')
   validateField('email')
   validateField('quantity')
+  validateField('numberOfStudents')
   validateField('startDate')
   validateField('endDate')
 
@@ -104,7 +111,7 @@ function submitForm() {
     errorCount += value.length > 0 ? 1 : 0
   }
 
-  if (errorCount == 0) {
+  if (errorCount === 0) {
     //if no errors are found
     let request = new inventoryRequest(props.inventoryItem.id, props.inventoryItem.name)
     request.startDate = requestForm.startDate.value
@@ -112,6 +119,7 @@ function submitForm() {
     request.contactEmail = requestForm.email.value
     request.contactName = `${requestForm.firstName.value} ${requestForm.lastName.value}`
     request.requestedQuantity = requestForm.quantity.value
+    request.numberOfStudents = requestForm.numberOfStudents.value
 
     //we need to validate that there is enough during that time to request
     let svc = new requestService(props.inventoryItem.id)
@@ -196,6 +204,18 @@ function submitForm() {
                   />
                   <div class="invalid" v-if="errors.email">
                     {{ errors.email }}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Number of Students Served</label>
+                  <input
+                    v-model="requestForm.numberOfStudents.value"
+                    type="number"
+                    class="form-control"
+                    id="requestedNumber"
+                  />
+                  <div class="invalid" v-if="errors.numberOfStudents">
+                    {{ errors.numberOfStudents }}
                   </div>
                 </div>
                 <div class="mb-3">

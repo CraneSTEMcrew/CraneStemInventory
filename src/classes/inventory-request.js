@@ -4,6 +4,7 @@ export class inventoryRequest {
   requestedQuantity = 0
   contactName = ''
   contactEmail = ''
+  numberOfStudents =0
   approved = false
 
   constructor(inventoryId, inventoryName) {
