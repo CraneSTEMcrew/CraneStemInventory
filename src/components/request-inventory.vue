@@ -77,24 +77,28 @@ defineExpose({
   setValues,
   reset
 })
+
 function setValues(startDate) {
   if (startDate) {
     let suggestedDate = startDate.toISOString().split('T')
     requestForm.startDate.value = suggestedDate[0]
   }
 }
+
 function reset() {
   requestForm.firstName.value = ''
   requestForm.lastName.value = ''
   requestForm.email.value = ''
   requestForm.quantity.value = 0
-  requestForm.numberOfStudents.value =0
+  requestForm.numberOfStudents.value = 0
   requestForm.startDate.value = ''
   requestForm.endDate.value = ''
 }
+
 function dismiss() {
   emit('dismiss')
 }
+
 function submitForm() {
   let errorCount = 0
   errors.value = {} // Clear previous errors
@@ -270,8 +274,9 @@ function submitForm() {
   width: 100%;
   margin-top: 0.25rem;
   font-size: 0.875em;
-  color: var(--bs-form-invalid-color);
+  color: red;
 }
+
 #background {
   z-index: 40;
   position: fixed;

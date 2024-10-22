@@ -31,7 +31,9 @@ let currentMonth = undefined
 onMounted(() => {
   currentMonth = new Date().getMonth() + 1
   currentRoute.value = route.fullPath
-  appliedFilters.value = JSON.parse(props.filter)
+  if (props.filter) {
+    appliedFilters.value = JSON.parse(props.filter)
+  }
   if (props.id) {
     loadInventoryDetails(props.id)
   }
@@ -184,10 +186,10 @@ function navigateBack(filterType, tagVal) {
         <div class="col">
           <span class="fs-4">{{ inventoryItem.name }}</span>
           <span v-if="inventoryItem.available > 0" class="badge rounded-pill text-bg-primary ms-2"
-          >In Stock now</span
+            >In Stock now</span
           >
           <span v-if="inventoryItem.available == 0" class="badge rounded-pill text-bg-danger ms-2"
-          >Unavailable</span
+            >Unavailable</span
           >
         </div>
       </div>
@@ -199,31 +201,35 @@ function navigateBack(filterType, tagVal) {
                 {{ inventoryItem.type }}
               </button>
               <i
-                v-if="appliedFilters.subTypeFilter.length > 0 || inventoryItem.subtype.length > 0"
+                v-if="
+                  (appliedFilters.subTypeFilter && appliedFilters.subTypeFilter.length > 0) ||
+                  inventoryItem.subtype.length > 0
+                "
                 class="bi bi-chevron-double-right"
               ></i>
               <button
-                v-if="appliedFilters.subTypeFilter.length > 0 || inventoryItem.subtype.length > 0"
+                v-if="
+                  (appliedFilters.subTypeFilter && appliedFilters.subTypeFilter.length > 0) ||
+                  inventoryItem.subtype.length > 0
+                "
                 @click="navigateBack('subfilter')"
                 type="button"
                 class="btn btn-link text-info"
               >
                 {{
-                  appliedFilters.subTypeFilter.length > 0
+                  appliedFilters.subTypeFilter && appliedFilters.subTypeFilter.length > 0
                     ? appliedFilters.subTypeFilter[0]
                     : inventoryItem.subtype.split(',')[0]
                 }}
-              </button
-              >
-              <i class="bi bi-chevron-double-right"></i
-              >
+              </button>
+              <i class="bi bi-chevron-double-right"></i>
               <button
                 @click="navigateBack('category')"
                 type="button"
                 class="btn btn-link text-info"
               >
                 {{
-                  appliedFilters.categoryFilter.length > 0
+                  appliedFilters.categoryFilter && appliedFilters.categoryFilter.length > 0
                     ? appliedFilters.categoryFilter[0]
                     : inventoryItem.category.split(',')[0]
                 }}

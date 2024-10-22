@@ -26,11 +26,12 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/inventory/detail/:id/:filter',
+      path: '/inventory/detail/:id/:filter?',
       name: 'inventory-detail',
       component: InventoryDetailView,
       props: true
     }
+
   ]
 })
 
