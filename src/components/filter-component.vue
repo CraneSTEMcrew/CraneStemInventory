@@ -8,6 +8,7 @@ import {
 } from '../constants/filterOptions'
 import { filterParameters } from '../classes/filter-parameter'
 import filterCheckbox from '../components/filter-checkbox.vue'
+
 const emit = defineEmits(['filterUpdated'])
 const filterText = ref(null)
 const currentFilter = ref(JSON.parse(JSON.stringify(filterOptions)))
@@ -73,11 +74,12 @@ function addToFilterParam() {
 function updateFilterText(filterVal) {
   filterText.value = filterVal
 }
+
 function updateFilter(filterParam) {
   let found = undefined
   let subFound = undefined
 
-  if (filterParam.filterText && filterParam.filterText.length> 0){
+  if (filterParam.filterText && filterParam.filterText.length > 0) {
     filterParameterObject.value.filterText = filterParam.filterText
     updateFilterText(filterParam.filterText)
     emit('filterUpdated', filterParameterObject.value)
@@ -140,6 +142,7 @@ function isFilterChecked(filterOption, isType) {
   }
   return false
 }
+
 function filterItemUpdated(filterOption, allChildren) {
   if (allChildren == undefined) allChildren = true
   filterOption.checked = !filterOption.checked
@@ -158,7 +161,7 @@ function filterItemUpdated(filterOption, allChildren) {
 
 <template>
   <div class="p-0">
-    <div class="row pt-2">
+    <div class="row text-center pt-2">
       <div class="col"><img src="../assets/NSWCCraneLogo.jpg" /><br /></div>
     </div>
     <div class="row pt-4">

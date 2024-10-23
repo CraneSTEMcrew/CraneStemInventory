@@ -9,6 +9,9 @@ import googleSheetsService from '../services/google-sheets-service'
 import { sortOptions } from '@/constants/filterOptions'
 import { filterParameters } from '../classes/filter-parameter'
 import router from '@/router/index.js'
+import viewportService from '@/services/viewport-service.js'
+import { viewportBreakpoints } from '@/constants/viewport-breakpoints.js'
+
 const sheetID = import.meta.env.VITE_SHEETID
 const dataResult = ref([])
 const totalResults = ref(0)
@@ -23,6 +26,7 @@ const svc = new googleSheetsService(sheetID)
 const route = useRoute()
 const filterComponentRef = ref(null)
 const currentRoute = ref(null)
+const mobileFilterState = ref({ isFilterExpanded: false, isResultsExpanded: true })
 
 onMounted(async () => {
   currentRoute.value = route.fullPath
@@ -156,9 +160,11 @@ function currentPageUpdated(newPageNumber) {
   currentPage.value = newPageNumber
   fetchInventoryData()
 }
+
 function calculateTotalPages(total, pagesize) {
   return Math.ceil(total / pagesize)
 }
+
 function optionsUpdated(size, layout, sort) {
   if (size != pageSize.value || sort != sortBy.value) {
     sortBy.value = sort
@@ -170,11 +176,13 @@ function optionsUpdated(size, layout, sort) {
   pageLayout.value = layout
   isGrid.value = pageLayout.value == 'Grid'
 }
+
 function filterUpdate(param) {
   currentPage.value = 1
   filterParameterObject.value = param
   fetchInventoryData()
 }
+
 function inventoryItemSelected(item) {
   let param = new filterParameters()
 
@@ -200,7 +208,7 @@ function inventoryItemSelected(item) {
     <div class="row">
       <div class="col-xl-3 col-lg-4 col-md-5">
         <div class="row">
-          <div class="col-5">
+          <div class="col-5 text-start">
             <span class="fs-5">ALL ITEMS</span>
           </div>
           <div class="col pt-1 text-start align-middle">
@@ -214,12 +222,51 @@ function inventoryItemSelected(item) {
     <div class="row">
       <div class="col-lg-3 col-xl-2 col-md-4">
         <div class="container-fluid p-0">
-          <filterComponent ref="filterComponentRef" @filterUpdated="filterUpdate"></filterComponent>
+          <div
+            v-if="viewportService.determineBreakpoint() <= viewportBreakpoints.SM"
+            class="accordion"
+          >
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button
+                  class="accordion-button"
+                  :class="{ collapsed: !mobileFilterState.isFilterExpanded }"
+                  @click="
+                    () => (mobileFilterState.isFilterExpanded = !mobileFilterState.isFilterExpanded)
+                  "
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="collapseTwo"
+                >
+                  Filters
+                </button>
+              </h2>
+              <div
+                class="accordion-collapse"
+                :class="{ collapse: !mobileFilterState.isFilterExpanded }"
+              >
+                <div class="accordion-body">
+                  <filterComponent
+                    ref="filterComponentRef"
+                    @filterUpdated="filterUpdate"
+                  ></filterComponent>
+                </div>
+              </div>
+            </div>
+          </div>
+          <filterComponent
+            v-if="viewportService.determineBreakpoint() > viewportBreakpoints.SM"
+            ref="filterComponentRef"
+            @filterUpdated="filterUpdate"
+          ></filterComponent>
         </div>
       </div>
       <div class="col">
-        <div class="row">
-          <div class="col">
+        <div class="row justify-content-end">
+          <div
+            class="col"
+            :class="{ 'pt-2': viewportService.determineBreakpoint() <= viewportBreakpoints.SM }"
+          >
             <InventorySearchOptions
               :page-size="pageSize"
               :page-layout="pageLayout"
@@ -238,7 +285,7 @@ function inventoryItemSelected(item) {
           ></inventorySearchResult>
         </div>
         <div class="row gy-3" v-if="dataResult.length == 0">No Results found</div>
-        <div class="row text-center">
+        <div class="row text-center pt-2">
           <div class="col text-center">
             <pager
               @page-updated="currentPageUpdated"
@@ -251,3 +298,14 @@ function inventoryItemSelected(item) {
     </div>
   </div>
 </template>
+<style scoped>
+.accordion-button {
+  background-color: #f4f4f4;
+  color: black;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #55616f;
+  color: white;
+}
+</style>

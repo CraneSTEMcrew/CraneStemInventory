@@ -237,26 +237,24 @@ function navigateBack(filterType, tagVal) {
             </div>
           </div>
           <div class="row">
-            <div class="col-1 col-md-3">
+            <div class="col-xl-2 col-md-3 col-xs-12">
               <div class="row">
-                <div class="col-12 text-center">
+                <div class="col col-xs-12 text-center">
                   <img
                     :src="imageService.formatImageUrl(inventoryItem.image)"
                     class="card-img-top result-image"
                     :alt="inventoryItem.name"
                   />
                 </div>
-                <div class="col-12 text-center pt-4">
+                <div class="col-12 text-center pt-4 pb-4">
                   <button @click="showRequestForm(true)" class="btn btn-warning">Request</button>
                 </div>
               </div>
-
-              <div class="container-fluid text-center"></div>
             </div>
-            <div class="col col-md-9 text-start">
+            <div class="col-xl-10 col-md-9 col-xs-12">
               <div class="row">
                 <div class="col">
-                  <p v-html="inventoryItem.description"></p>
+                  <p class="text-start">{{ inventoryItem.description }}</p>
                   <button
                     v-if="inventoryItem.infoURL && inventoryItem.infoURL.length > 0"
                     v-on:click="viewAdditionalInfo"
@@ -280,12 +278,11 @@ function navigateBack(filterType, tagVal) {
                   >
                     {{ tag }}
                   </span>
-                  <p class="pt-4 h6">Availability</p>
+                  <p class="pt-5 pb-2 h5">Availability</p>
                   <Calendar
                     :attributes="scheduledDates"
                     @update:pages="updateSchedule"
                     @dayclick="dayClicked"
-                    borderless
                     expanded
                   >
                   </Calendar>

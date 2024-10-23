@@ -25,11 +25,15 @@ import toolbar from './components/toolbar-component.vue'
   padding-left: 0;
   padding-right: 0;
 }
+
 .content-div {
-  padding-top: 2rem;
-  margin-left: 5%;
-  margin-right: 5%;
+  padding-top: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  @media (max-width: 768px) {
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+    padding-top: 0.1rem;
+  }
 }
-
-
 </style>

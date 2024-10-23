@@ -2,6 +2,7 @@
 import { reactive, ref } from 'vue'
 import router from '@/router'
 import { filterParameters } from '@/classes/filter-parameter.js'
+
 const filterText = ref('')
 const isSearchFocused = reactive({
   value: false
@@ -22,10 +23,11 @@ function clearFilter() {
     name: 'inventory'
   })
 }
+
 function filterTextUpdated() {
   if (!filterText.value || filterText.value.length == 0) return
   let param = new filterParameters()
-  param.filterText=filterText.value
+  param.filterText = filterText.value
   router.push({
     name: 'inventory',
     params: { filter: JSON.stringify(param) }
@@ -39,26 +41,25 @@ function filterTextUpdated() {
 <template>
   <div id="tool-bar" class="p-0">
     <div class="row tools-row">
-      <div class="col-lg-4 col-xl-3 col-md-5">
-        <div class="row">
-          <div
-            :class="{ active: router.currentRoute.value.name == 'home' }"
-            class="col-1 col-md-5 menu-item text-start menu-item"
-            @click="() => router.push('/')"
-          >
-            <i class="bi bi-house-door"></i> Home
-          </div>
-          <div
-            :class="{ active: router.currentRoute.value.name == 'inventory' }"
-            class="col-1 col-md-6 menu-item text-start menu-item"
-            @click="() => router.push('/inventory')"
-          >
-            <i class="bi bi-grid"></i> Inventory
-          </div>
+      <div
+        class="col-xxl-1 col-2 col-xs-1 menu-item-col text-center"
+        :class="{ active: router.currentRoute.value.name == 'home' }"
+      >
+        <div class="menu-item" @click="() => router.push('/')" title="Home">
+          <i class="bi bi-house-door"></i>
+          <span class="menu-item-name"> Home</span>
         </div>
       </div>
-
-      <div ref="searchBoxCtrl" class="col text-end pt-2">
+      <div
+        class="col-xxl-1 col-2 col-xs-1 menu-item-col text-center"
+        :class="{ active: router.currentRoute.value.name == 'inventory' }"
+      >
+        <div class="menu-item" @click="() => router.push('/inventory')" title="Inventory">
+          <i class="bi bi-grid"></i>
+          <span class="menu-item-name"> Inventory</span>
+        </div>
+      </div>
+      <div ref="searchBoxCtrl" class="col text-end pe-5 pt-2 pb-2">
         <input
           type="text"
           @focus="setFocusState(true)"
@@ -86,7 +87,6 @@ function filterTextUpdated() {
           class="bi bi-x"
         ></i>
       </div>
-      <div class="col-1"></div>
     </div>
   </div>
 </template>
@@ -106,28 +106,38 @@ function filterTextUpdated() {
 
 #tool-bar {
   background-color: #12171d;
-
   color: white;
 }
-.tools-row {
-  margin-left: 6%;
-  margin-right: 5%;
 
-  .menu-item:hover {
+.tools-row {
+  @media (max-width: 600px) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .menu-item-col:hover {
     cursor: pointer;
     background-color: #55616f;
   }
 }
 
 .menu-item {
-  padding: 1rem;
+  padding-top: 1rem;
+  @media (max-width: 600px) {
+    .menu-item-name {
+      display: none;
+    }
+  }
 }
+
 .active {
   background-color: #55616f;
 }
+
 .menu-item:hover {
   text-decoration: underline;
 }
+
 #search-box {
   padding-top: 0.5rem;
 
@@ -139,7 +149,7 @@ function filterTextUpdated() {
 }
 
 .search-box-input {
-  padding: 0.375rem 0.75rem;
+  padding: 0.375rem;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -157,15 +167,25 @@ function filterTextUpdated() {
     border-color 0.15s ease-in-out,
     box-shadow 0.15s ease-in-out;
   text-indent: 10px;
-  width: 30%;
-  @media (max-width: 768px) {
+  width: 20%;
+
+  @media (max-width: 1024px) {
     width: 50%;
   }
-}
-.search-box-input-large {
-  width: 50%;
+
   @media (max-width: 768px) {
+    width: 90%;
+  }
+}
+
+.search-box-input-large {
+  width: 30%;
+  @media (max-width: 1024px) {
     width: 70%;
+  }
+
+  @media (max-width: 768px) {
+    width: 90%;
   }
   text-indent: 10px;
 }
