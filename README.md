@@ -1,6 +1,6 @@
-# stem-inv
+# NSWC Crane Stem Lending Library
 
-This template should help get you started developing with Vue 3 in Vite.
+A Vue 3 Single Page Applicating (SPA) utilizing Vite and Bootstrap. CraneLendingLibrary.org is hosted within Git Hub Pages, set to host from the "gh-pages" branch.
 
 ## Recommended IDE Setup
 
@@ -55,4 +55,35 @@ npm run test:unit -- --headless # for headless testing
 
 ```sh
 npm run lint
+```
+## Project Deployment
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+```
+
+### Push production files to the "gh-pages" branch
+```sh
+git subtree push --prefix dist origin gh-pages
+```
+
+### switch to "gh-pages" branch
+```sh
+git checkout gh-pages
+```
+
+### Copy CNAME file to Dist
+```sh
+copy CNAME ./dist
+```
+
+### Commit Changes to "gh-pages" branch
+```sh
+git commit -m "commit message describing changes"
+```
+### Push Changes to GH-Pages branch
+```sh
+git push
 ```
